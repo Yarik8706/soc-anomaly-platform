@@ -22,7 +22,7 @@
 
 Скрипт поддерживает режимы `report`, `metrics`, `report+metrics`, а также масштабы
 `day`, `week`, `month`, `range`, `all`. Для каждого запуска он создаёт единый каталог
-артефактов с подкаталогами `anomalies/`, `reports/`, `metrics/`, `meta/`.  fileciteturn18file19
+артефактов с подкаталогами `anomalies/`, `reports/`, `metrics/`, `meta/`.  
 
 ## Базовая структура проекта
 
