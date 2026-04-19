@@ -1,279 +1,132 @@
-# ВКР: обнаружение аномалий в активности пользователей и хостов
+# FQW_diplom
 
-## Тема
-**Применение методов машинного обучения для обнаружения аномалий в активности пользователей на событиях службы каталогов и данных сетевого трафика**
+Эксплуатационный README для запуска пайплайна обнаружения поведенческих аномалий по SIEM- и NGFW-логам.
 
-## Назначение проекта
-Проект реализует офлайн-конвейер обработки SIEM-выгрузок и сетевых событий для:
-- нормализации и анонимизации данных;
-- построения суточных признаков по пользователям и хостам;
-- поиска аномалий методами `Isolation Forest` и `Local Outlier Factor`;
-- объяснения причин аномалий;
-- формирования графиков, SOC-отчётов и прокси-метрик качества без размеченных данных.
+## Назначение
 
----
+Проект реализует офлайн-конвейер обработки выгрузок SIEM/NGFW:
+- нормализация и анонимизация сырых событий;
+- построение признаков `user/day` и `host/day`;
+- очистка признаков;
+- поиск аномалий с помощью `Isolation Forest` и `Local Outlier Factor`;
+- explainability-слой для интерпретации причин аномалии;
+- построение графиков и SOC-отчётов;
+- расчёт прокси-метрик качества без разметки.
+
+Основная точка входа для полного запуска:
+- `script/full_cycle_auto_evolute_metrics.py`
 
 ## Структура проекта
 
-Пример верхнего уровня репозитория:
+По текущей структуре репозитория верхний уровень выглядит так:
 
 ```text
 FQW_diplom/
+├── .git/
+├── .idea/
+├── .venv/
+├── screens/
+├── script/
+├── version/
 ├── README.md
 ├── .gitignore
-├── script/
-├── screens/
-├── version/
-└── ...
+└── .gitattributes
 ```
 
-Основная рабочая папка проекта:
+Рабочая часть проекта находится в каталоге `script/`:
 
 ```text
 script/
-├── data/
-├── python_script.py
-├── build_features_v2.py
-├── preprocess_features.py
-├── train_anomaly_models.py
-├── explain_anomalies.py
-├── visualize_reports.py
-├── soc_report.py
-├── evaluate_proxy_metrics.py
-├── viz_core.py
-├── full_cycle_auto_evolute_metrics.py
-└── ...
+├── data/                             # сырые выгрузки SIEM/NGFW (*.tsv, *.txt)
+├── python_script.py                  # нормализация и анонимизация
+├── build_features_v2.py              # построение признаков
+├── preprocess_features.py            # очистка признаков
+├── train_anomaly_models.py           # скоринг аномалий
+├── explain_anomalies.py              # explainability-слой
+├── visualize_reports.py              # графики day/week/month
+├── soc_report.py                     # SOC-отчёт с контекстом
+├── evaluate_proxy_metrics.py         # прокси-метрики качества без разметки
+├── viz_core.py                       # общие функции скоринга и визуализации
+├── auto_generate_reports.py          # пакетная генерация базовых отчётов
+└── full_cycle_auto_evolute_metrics.py# основной orchestrator полного цикла
 ```
 
-### Назначение каталогов
-- `script/data/` — исходные сырые выгрузки SIEM и связанные данные в формате `*.tsv` или `*.txt`
-- `script/work/` — промежуточные нормализованные суточные CSV
-- `script/features/` — таблицы признаков `features_*.csv` и `features_*_clean.csv`
-- `script/report/` — результаты запусков
-- `screens/` — скриншоты и иллюстрации
-- `version/` — дополнительные версии и служебные материалы
+## Что нужно для запуска
 
-> Папки `work/`, `features/` и `report/` могут отсутствовать до первого запуска — скрипты создают их автоматически.
+Минимально необходимо:
+- Python 3.10+;
+- установленные библиотеки `pandas`, `numpy`, `scikit-learn`, `matplotlib`;
+- исходные выгрузки SIEM/NGFW в папке `script/data/`.
 
----
-
-## Основные скрипты
-
-### `python_script.py`
-Нормализует сырые выгрузки:
-- читает `*.tsv` и `*.txt` из `data/`;
-- удаляет служебные поля;
-- анонимизирует пользователей;
-- разбивает события по датам;
-- выделяет PAN-OS TRAFFIC;
-- сохраняет суточные CSV в `work/`.
-
-### `build_features_v2.py`
-Строит суточные признаки по:
-- пользователям (`user/day`);
-- хостам (`host/day`).
-
-Результат:
-- `features_users.csv`
-- `features_hosts.csv`
-
-### `preprocess_features.py`
-Подготавливает признаки к моделям:
-- приводит `date` к формату `YYYY-MM-DD`;
-- преобразует признаки к числовому виду;
-- заполняет пропуски нулями.
-
-Результат:
-- `features_users_clean.csv`
-- `features_hosts_clean.csv`
-
-### `train_anomaly_models.py`
-Обучает и применяет:
-- `Isolation Forest`
-- `Local Outlier Factor`
-
-Результат:
-- `anomalies_users_<date>.csv`
-- `anomalies_hosts_<date>.csv`
-
-### `explain_anomalies.py`
-Формирует объяснение аномалий:
-- определяет признаки с наибольшим отклонением;
-- присваивает уровень серьёзности;
-- создаёт explain-файлы.
-
-### `visualize_reports.py`
-Строит графики:
-- за день;
-- за неделю;
-- за месяц.
-
-### `soc_report.py`
-Формирует SOC-отчёт с контекстом:
-- сущность;
-- серьёзность;
-- краткое описание;
-- программы;
-- время;
-- пользователи;
-- адреса;
-- исходные файлы.
-
-### `evaluate_proxy_metrics.py`
-Считает прокси-метрики качества модели без разметки:
-- распределение оценок аномальности;
-- `Jaccard@K`;
-- `Overlap@K`;
-- `Spearman@K`;
-- частоту признаков explainability;
-- графики для главы с экспериментами.
-
-### `full_cycle_auto_evolute_metrics.py`
-Единая точка входа для полного запуска:
-- подготовка данных;
-- построение признаков;
-- препроцессинг;
-- поиск аномалий;
-- explainability;
-- визуализация;
-- SOC-отчёт;
-- прокси-метрики.
-
----
-
-## Что должно быть в папке `data`
-
-В `script/data/` нужно положить сырые выгрузки:
-- `*.tsv`
-- `*.txt`
-
-Это исходные данные из SIEM и смежных источников.
-
-Если сырые данные лежат в `data/`, этого достаточно для запуска полного цикла.
-
----
-
-## Быстрый старт
-
-Перейдите в папку `script`:
-
-```bash
-cd script
-```
-
-### Полный запуск в интерактивном режиме
-```bash
-python full_cycle_auto_evolute_metrics.py
-```
-
-Скрипт сам спросит:
-- масштаб запуска;
-- режим запуска;
-- дату или диапазон дат.
-
-### Пример: отчёты и метрики за один день
-```bash
-python full_cycle_auto_evolute_metrics.py --scope day --date 2025-12-31 --run-mode report+metrics
-```
-
-### Пример: отчёты и метрики за месяц
-```bash
-python full_cycle_auto_evolute_metrics.py --scope month --date 2025-12-31 --run-mode report+metrics
-```
-
-### Пример: анализ за диапазон
-```bash
-python full_cycle_auto_evolute_metrics.py --scope range --start-date 2025-12-01 --end-date 2025-12-31 --run-mode report+metrics
-```
-
-### Пример: анализ за всё доступное время
-```bash
-python full_cycle_auto_evolute_metrics.py --scope all --run-mode report+metrics
-```
-
----
-
-## Режимы запуска
-
-Скрипт поддерживает три режима:
-- `report` — только отчёты
-- `metrics` — только прокси-метрики
-- `report+metrics` — отчёты и метрики одновременно
-
----
-
-## Масштабы анализа
-
-Доступны следующие масштабы:
-- `day` — анализ за один день
-- `week` — анализ за неделю
-- `month` — анализ за месяц
-- `range` — анализ за заданный период
-- `all` — анализ за всё доступное время
-
----
-
-## Структура результатов одного запуска
-
-Для каждого запуска создаётся отдельная папка внутри `script/report/`.
-
-Пример:
-
-```text
-report/
-└── month__2025-12-31__20260419_153000/
-    ├── anomalies/
-    ├── reports/
-    ├── metrics/
-    └── meta/
-```
-
-### Что лежит внутри
-- `anomalies/` — аномалии и explain-файлы
-- `reports/` — графики и SOC-отчёты
-- `metrics/` — прокси-метрики и графики для ВКР
-- `meta/` — конфигурация запуска и служебные JSON-файлы
-
----
-
-## Типовой порядок обработки
-
-1. Сырые данные помещаются в `data/`
-2. `python_script.py` нормализует выгрузки и создаёт суточные CSV
-3. `build_features_v2.py` строит признаки пользователей и хостов
-4. `preprocess_features.py` очищает признаки
-5. `train_anomaly_models.py` считает аномалии
-6. `explain_anomalies.py` формирует объяснения
-7. `visualize_reports.py` строит графики
-8. `soc_report.py` формирует SOC-отчёт
-9. `evaluate_proxy_metrics.py` считает исследовательские метрики
-
----
-
-## Зависимости
-
-Требуется Python 3.10+.
-
-Установка библиотек:
+Установка зависимостей:
 
 ```bash
 pip install -U pandas numpy scikit-learn matplotlib
 ```
 
----
+## Какие данные должны лежать в `script/data/`
 
-## Полезные замечания
+В папку `script/data/` помещаются сырые выгрузки:
+- `*.tsv`
+- `*.txt`
 
-- Все основные скрипты рекомендуется хранить в одной папке `script/`.
-- Имя файла `full_cycle_auto_evolute_metrics.py` можно менять, если он остаётся в той же папке и рядом лежат остальные скрипты.
-- Если используется режим полного цикла, достаточно иметь:
-  - папку `data/` с сырыми файлами;
-  - сами `.py`-скрипты проекта.
-- Рабочие и выходные каталоги создаются автоматически.
+Ожидается, что это исходные экспортированные данные SIEM и, при наличии, события NGFW/Palo Alto.
 
----
+## Какие папки должны быть заранее
 
-## Основной рекомендуемый запуск
+Обязательно должна существовать и быть заполнена:
+- `script/data/`
+
+Остальные рабочие каталоги при обычном запуске могут отсутствовать. Скрипты создадут их автоматически:
+- `script/work/`
+- `script/features/`
+- `script/report/`
+
+Также для каждого запуска `full_cycle_auto_evolute_metrics.py` автоматически создаёт отдельный каталог артефактов.
+
+## Что создаётся в процессе работы
+
+### `script/work/`
+Промежуточные нормализованные суточные CSV:
+- `userXXX_SIEM_YYYY-MM-DD.csv`
+- `userXXX_PAN_YYYY-MM-DD.csv`
+- `<hostname>_SIEM_YYYY-MM-DD.csv`
+- `<hostname>_PAN_YYYY-MM-DD.csv`
+- `user_mapping.csv`
+
+### `script/features/`
+Таблицы признаков:
+- `features_users.csv`
+- `features_hosts.csv`
+- `features_users_clean.csv`
+- `features_hosts_clean.csv`
+
+### `script/report/<run_id>/`
+Единый каталог артефактов одного запуска:
+
+```text
+script/report/<run_id>/
+├── anomalies/   # anomalies_*.csv, *_explain.csv, meta.json
+├── reports/     # графики и SOC-отчёты
+├── metrics/     # прокси-метрики, CSV/JSON/PNG
+└── meta/        # requested_run.json, run_config.json, manifest.json
+```
+
+## Полный запуск
+
+Из корня репозитория:
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py
+```
+
+Скрипт поддерживает интерактивный режим:
+- выбор масштаба: `day`, `week`, `month`, `range`, `all`;
+- выбор режима: `report`, `metrics`, `report+metrics`;
+- ввод даты или диапазона дат.
+
+## Рекомендуемый первый запуск
 
 Для первого полного прогона:
 
@@ -282,17 +135,119 @@ cd script
 python full_cycle_auto_evolute_metrics.py --scope month --date 2025-12-31 --run-mode report+metrics
 ```
 
-Этот вариант обычно даёт:
-- аномалии;
-- explainability;
-- графики;
-- SOC-отчёты;
-- метрики и визуализации для ВКР.
+Этот запуск:
+- подготовит данные из `data/`;
+- построит признаки;
+- посчитает аномалии;
+- сформирует explainability;
+- построит графики и SOC-отчёт;
+- посчитает прокси-метрики качества;
+- сохранит всё в отдельный каталог внутри `script/report/`.
 
----
+## Примеры запуска
+
+### За один день
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py --scope day --date 2025-12-31 --run-mode report+metrics
+```
+
+### За неделю
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py --scope week --date 2025-12-31 --run-mode report+metrics
+```
+
+### За месяц
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py --scope month --date 2025-12-31 --run-mode report+metrics
+```
+
+### За заданный диапазон
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py --scope range --start-date 2025-12-01 --end-date 2025-12-31 --run-mode report+metrics
+```
+
+### За всё доступное время
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py --scope all --run-mode report+metrics
+```
+
+## Если данные уже подготовлены
+
+Если каталоги `work/` и `features/` уже содержат актуальные результаты и вы не хотите заново запускать нормализацию и построение признаков:
+
+```bash
+cd script
+python full_cycle_auto_evolute_metrics.py --scope month --date 2025-12-31 --run-mode report+metrics --reuse-prepared-data
+```
+
+В этом режиме должны уже существовать:
+- `features_users_clean.csv`
+- `features_hosts_clean.csv`
+
+## Что означает каждый этап пайплайна
+
+1. `python_script.py`  
+   Нормализует сырые выгрузки, удаляет служебные поля, анонимизирует пользователей и раскладывает события по суткам.
+
+2. `build_features_v2.py`  
+   Агрегирует события в признаки `user/day` и `host/day`.
+
+3. `preprocess_features.py`  
+   Приводит признаки к числовому виду и заполняет пропуски.
+
+4. `train_anomaly_models.py`  
+   Обучает `Isolation Forest` и `LOF` на исторических днях и считает аномалии целевой даты.
+
+5. `explain_anomalies.py`  
+   Вычисляет признаки, сильнее всего отклонившиеся от базовой линии.
+
+6. `visualize_reports.py`  
+   Строит графики за день, неделю или месяц.
+
+7. `soc_report.py`  
+   Формирует SOC-отчёт с контекстом по событиям.
+
+8. `evaluate_proxy_metrics.py`  
+   Считает прокси-метрики качества без разметки:
+   - `Jaccard@K`
+   - `Overlap@K`
+   - `Spearman@K`
+   - распределение `score_combined_norm`
+   - частоту признаков из explainability.
+
+## Что искать после запуска
+
+После завершения полного запуска сначала проверьте:
+- `script/report/<run_id>/meta/manifest.json` — общий статус запуска;
+- `script/report/<run_id>/reports/` — графики и SOC-отчёты;
+- `script/report/<run_id>/metrics/` — таблицы и графики для ВКР;
+- `script/report/<run_id>/anomalies/` — CSV с аномалиями и explainability.
+
+## Назначение прокси-метрик качества
+
+`evaluate_proxy_metrics.py` используется для оценки модели в условиях отсутствия размеченного ground truth. На выходе формируются:
+- таблицы устойчивости top-K аномалий;
+- histogram распределения аномальных score;
+- графики устойчивости при варьировании `contamination` и `n_neighbors`;
+- диаграммы частоты факторов explainability.
+
+Эти материалы предназначены для главы «Экспериментальная оценка» ВКР.
+
+## Источник данных
+
+Данные получены из SIEM KUMA (Kaspersky). Перед использованием их необходимо обезличить. Это выполняет `python_script.py`, который преобразует реальные учётные записи в формат `userXXX`.
 
 ## Автор
-**В. С. Новиков**
 
-## Научный руководитель
-**Д. В. Смирнов**
+**Автор:** В. С. Новиков  
+**Научный руководитель:** Д. В. Смирнов
