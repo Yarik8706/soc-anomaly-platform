@@ -1,0 +1,29 @@
+{
+  "run_mode": "report+metrics",
+  "scope": "day",
+  "target_date": "2025-12-31",
+  "dates_for_anomalies": [
+    "2025-12-31"
+  ],
+  "top_anomalies": 30,
+  "top_features": 5,
+  "top_pct": 0.05,
+  "contamination": 0.05,
+  "n_estimators": 300,
+  "max_samples": "auto",
+  "n_neighbors": 20,
+  "random_state": 42,
+  "for_thesis": false,
+  "reuse_prepared_data": false,
+  "metrics_script": "evaluate_proxy_metrics.py",
+  "metrics_k_list": "10,20",
+  "metrics_plot_k": 10,
+  "metrics_contamination_grid": "0.03,0.05,0.07",
+  "metrics_neighbors_grid": "15,20,25",
+  "contributor_severities": "critical,high",
+  "strict_metrics": false,
+  "strict_explain": false,
+  "save_score_tables": false,
+  "dry_run": false,
+  "run_tag": ""
+}

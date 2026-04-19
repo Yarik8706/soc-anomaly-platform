@@ -1,0 +1,13 @@
+date,entity_type,param_group,param_name,param_value,k,jaccard,overlap,spearman
+2025-12-31,hosts,contamination,contamination,0.03,10,1.0,1.0,0.9999999999999999
+2025-12-31,hosts,contamination,contamination,0.03,20,1.0,1.0,1.0
+2025-12-31,hosts,contamination,contamination,0.05,10,1.0,1.0,0.9999999999999999
+2025-12-31,hosts,contamination,contamination,0.05,20,1.0,1.0,1.0
+2025-12-31,hosts,contamination,contamination,0.07,10,1.0,1.0,0.9999999999999999
+2025-12-31,hosts,contamination,contamination,0.07,20,1.0,1.0,1.0
+2025-12-31,hosts,n_neighbors,n_neighbors,15.0,10,0.3333333333333333,0.5,0.3296296296296297
+2025-12-31,hosts,n_neighbors,n_neighbors,15.0,20,0.6666666666666666,0.8,0.45502183406113533
+2025-12-31,hosts,n_neighbors,n_neighbors,20.0,10,1.0,1.0,0.9999999999999999
+2025-12-31,hosts,n_neighbors,n_neighbors,20.0,20,1.0,1.0,1.0
+2025-12-31,hosts,n_neighbors,n_neighbors,25.0,10,1.0,1.0,0.9999999999999999
+2025-12-31,hosts,n_neighbors,n_neighbors,25.0,20,1.0,1.0,0.9984962406015038
