@@ -22,7 +22,7 @@
 
 Скрипт поддерживает режимы `report`, `metrics`, `report+metrics`, а также масштабы
 `day`, `week`, `month`, `range`, `all`. Для каждого запуска он создаёт единый каталог
-артефактов с подкаталогами `anomalies/`, `reports/`, `metrics/`, `meta/`. fileciteturn18file15 fileciteturn18file19
+артефактов с подкаталогами `anomalies/`, `reports/`, `metrics/`, `meta/`.  fileciteturn18file19
 
 ## Базовая структура проекта
 
@@ -47,9 +47,9 @@ project/
 
 ## Назначение каталогов
 
-- `data/` — сырые выгрузки SIEM/NGFW в форматах `*.tsv` и `*.txt`. fileciteturn17file5
-- `work/` — нормализованные суточные CSV и `user_mapping.csv`. fileciteturn17file5
-- `features/` — таблицы признаков и очищенные таблицы `features_*_clean.csv`. fileciteturn17file4
+- `data/` — сырые выгрузки SIEM/NGFW в форматах `*.tsv` и `*.txt`. 
+- `work/` — нормализованные суточные CSV и `user_mapping.csv`. 
+- `features/` — таблицы признаков и очищенные таблицы `features_*_clean.csv`. 
 - `report/` — корневая папка запусков orchestrator.
 
 ## Артефакты одного запуска orchestrator
@@ -68,7 +68,7 @@ report/<scope>__<target_date>__<timestamp>[/<tag>]/
 - `anomalies/` — TOP-N аномалий, explain-файлы и метаданные train-этапа;
 - `reports/` — PNG-графики `visualize_reports.py` и Markdown/SOC-артефакты;
 - `metrics/` — прокси-метрики качества, CSV/JSON/PNG из `evaluate_proxy_metrics.py`;
-- `meta/` — `requested_run.json`, `run_config.json`, `manifest.json`. fileciteturn18file15 fileciteturn18file19
+- `meta/` — `requested_run.json`, `run_config.json`, `manifest.json`. 
 
 ## Основные зависимости
 
