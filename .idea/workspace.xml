@@ -6,55 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e554abce-d3dc-43f7-b015-f112669f5253" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_all_2025-12-23_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_hosts_2025-12-23.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_hosts_2025-12-23_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_hosts_2025-12-23_meta.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_users_2025-12-23.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_users_2025-12-23_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomalies_users_2025-12-23_meta.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/anomaly_context_day_2025-12-23.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_all_2025-12-21_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_all_2025-12-31_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_hosts_2025-12-21.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_hosts_2025-12-21_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_hosts_2025-12-21_meta.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_hosts_2025-12-31.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_hosts_2025-12-31_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_hosts_2025-12-31_meta.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_users_2025-12-21.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_users_2025-12-21_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_users_2025-12-21_meta.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_users_2025-12-31.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_users_2025-12-31_explain.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomalies_users_2025-12-31_meta.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomaly_context_day_2025-12-21.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomaly_context_day_2025-12-31.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features/anomaly_context_week_2025-12-31.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features_hosts.csv" beforeDir="false" afterPath="$PROJECT_DIR$/script/features/features_hosts.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features_hosts_clean.csv" beforeDir="false" afterPath="$PROJECT_DIR$/script/features/features_hosts_clean.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features_users.csv" beforeDir="false" afterPath="$PROJECT_DIR$/script/features/features_users.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/features/features_users_clean.csv" beforeDir="false" afterPath="$PROJECT_DIR$/script/features/features_users_clean.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/script/readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-23/day_scores_hosts_2025-12-23.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-23/day_scores_users_2025-12-23.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-23/severity_hosts_2025-12-23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-23/severity_users_2025-12-23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-23/top_hosts_2025-12-23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-23/top_users_2025-12-23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-31/day_scores_hosts_2025-12-31.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-31/day_scores_users_2025-12-31.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-31/severity_hosts_2025-12-31.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-31/severity_users_2025-12-31.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-31/top_hosts_2025-12-31.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/day_2025-12-31/top_users_2025-12-31.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/soc_report_day_2025-12-21_20260114_213636.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/soc_report_day_2025-12-23_20260114_225031.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/soc_report_day_2025-12-31_20260114_212450.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/soc_report_day_2025-12-31_20260114_212557.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/soc_report_day_2025-12-31_20260114_221226.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/report/soc_report_week_2025-12-31_20260114_212622.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
