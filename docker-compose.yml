@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: soc-anomaly-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+    environment:
+      - APP_ENV=local
+      - DATABASE_URL=postgresql+psycopg://soc_user:soc_password@postgres:5432/soc_anomaly
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+  postgres:
+    image: postgres:16-alpine
+    container_name: soc-anomaly-postgres
+    environment:
+      POSTGRES_DB: soc_anomaly
+      POSTGRES_USER: soc_user
+      POSTGRES_PASSWORD: soc_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soc_user -d soc_anomaly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
