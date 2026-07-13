@@ -8,6 +8,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic
+      - ./data/uploads:/app/data/uploads
     environment:
       - APP_ENV=local
       - DATABASE_URL=postgresql+psycopg://soc_user:soc_password@postgres:5432/soc_anomaly
