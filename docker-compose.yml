@@ -10,9 +10,12 @@ services:
       - ./backend/app:/app/app
       - ./backend/alembic:/app/alembic
       - ./data/uploads:/app/data/uploads
+      - ./data/normalized:/app/data/normalized
     environment:
       - APP_ENV=local
       - DATABASE_URL=postgresql+psycopg://soc_user:soc_password@postgres:5432/soc_anomaly
+      - UPLOAD_DIRECTORY=/app/data/uploads
+      - NORMALIZED_DIRECTORY=/app/data/normalized
     depends_on:
       postgres:
         condition: service_healthy

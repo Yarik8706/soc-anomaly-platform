@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     app_env: str = "local"
     database_url: str = ""
+    upload_directory: Path = PROJECT_ROOT / "data" / "uploads"
+    normalized_directory: Path = PROJECT_ROOT / "data" / "normalized"
 
     model_config = SettingsConfigDict(
         env_file=PROJECT_ROOT / ".env",

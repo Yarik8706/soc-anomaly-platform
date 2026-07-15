@@ -1,12 +1,20 @@
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID, uuid4
 
 from fastapi import UploadFile
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.models.uploaded_file import UploadedFile
+from app.services.log_normalization import (
+    LogNormalizationError,
+    NormalizationConfig,
+    normalize_log_file,
+)
+from app.services.log_validation import FileValidationResult, validate_log_file
 
-UPLOAD_DIRECTORY = Path("/app/data/uploads")
 ALLOWED_EXTENSIONS = {".csv", ".tsv", ".txt"}
 MAX_FILE_SIZE = 50 * 1024 * 1024
 CHUNK_SIZE = 1024 * 1024
@@ -22,6 +30,12 @@ class EmptyFileError(Exception):
 
 class FileTooLargeError(Exception):
     pass
+
+
+class InvalidLogStructureError(Exception):
+    def __init__(self, result: FileValidationResult) -> None:
+        self.result = result
+        super().__init__("; ".join(result.errors))
 
 
 async def save_uploaded_file(
@@ -41,9 +55,9 @@ async def save_uploaded_file(
         raise InvalidFileTypeError(f"Unsupported file extension: {extension}")
 
     stored_filename = f"{uuid4()}{extension}"
-    storage_path = UPLOAD_DIRECTORY / stored_filename
+    storage_path = settings.upload_directory / stored_filename
 
-    UPLOAD_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    settings.upload_directory.mkdir(parents=True, exist_ok=True)
 
     size = 0
 
@@ -86,6 +100,7 @@ async def save_uploaded_file(
         storage_path.unlink(missing_ok=True)
         raise
 
+
 async def save_uploaded_files(
     db: Session,
     files: list[UploadFile],
@@ -123,3 +138,71 @@ async def save_uploaded_files(
         db.refresh(uploaded_file)
 
     return uploaded_files
+
+
+def list_uploaded_files(db: Session) -> list[UploadedFile]:
+    statement = select(UploadedFile).order_by(UploadedFile.created_at.desc())
+    return list(db.scalars(statement).all())
+
+
+def get_uploaded_file(db: Session, file_id: UUID) -> UploadedFile | None:
+    return db.get(UploadedFile, file_id)
+
+
+def validate_uploaded_file(
+    db: Session,
+    uploaded_file: UploadedFile,
+) -> UploadedFile:
+    result = validate_log_file(Path(uploaded_file.storage_path))
+    uploaded_file.validation_result = result.to_dict()
+    uploaded_file.validated_at = _utc_now()
+    uploaded_file.status = "validated" if result.is_valid else "invalid"
+    db.commit()
+    db.refresh(uploaded_file)
+    return uploaded_file
+
+
+def normalize_uploaded_file(
+    db: Session,
+    uploaded_file: UploadedFile,
+) -> UploadedFile:
+    validation = validate_log_file(Path(uploaded_file.storage_path))
+    uploaded_file.validation_result = validation.to_dict()
+    uploaded_file.validated_at = _utc_now()
+
+    if not validation.is_valid:
+        uploaded_file.status = "invalid"
+        db.commit()
+        db.refresh(uploaded_file)
+        raise InvalidLogStructureError(validation)
+
+    output_directory = (
+        settings.normalized_directory
+        / str(uploaded_file.id)
+        / _utc_now().strftime("%Y%m%dT%H%M%S%f")
+    )
+    try:
+        result = normalize_log_file(
+            NormalizationConfig(
+                input_path=Path(uploaded_file.storage_path),
+                output_directory=output_directory,
+            ),
+            validation=validation,
+        )
+    except LogNormalizationError as exc:
+        uploaded_file.status = "failed"
+        uploaded_file.normalization_result = {"errors": [str(exc)]}
+        db.commit()
+        db.refresh(uploaded_file)
+        raise
+
+    uploaded_file.normalization_result = result.to_dict()
+    uploaded_file.normalized_at = _utc_now()
+    uploaded_file.status = "normalized"
+    db.commit()
+    db.refresh(uploaded_file)
+    return uploaded_file
+
+
+def _utc_now() -> datetime:
+    return datetime.now(UTC).replace(tzinfo=None)
