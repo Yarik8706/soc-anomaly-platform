@@ -1,41 +1,103 @@
+name: soc-anomaly-platform
+
+x-backend-environment: &backend-environment
+  APP_ENV: local
+  DATABASE_URL: postgresql+psycopg://soc_user:soc_password@postgres:5432/soc_anomaly
+  REDIS_URL: redis://redis:6379/0
+  ANALYSIS_QUEUE: analysis
+  UPLOAD_DIRECTORY: /app/data/uploads
+  NORMALIZED_DIRECTORY: /app/data/normalized
+  ANALYSIS_DIRECTORY: /app/data/runs
+  JWT_SECRET: ${JWT_SECRET:-local-docker-secret-change-before-sharing}
+  INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL:-admin@example.com}
+  INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-local-admin-change-me}
+
+x-backend-volumes: &backend-volumes
+  - ./data/uploads:/app/data/uploads
+  - ./data/normalized:/app/data/normalized
+  - ./data/runs:/app/data/runs
+
 services:
+  migrations:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["sh", "-c", "alembic upgrade head && python -m app.seed"]
+    environment: *backend-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes: *backend-volumes
+    restart: "no"
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: soc-anomaly-backend
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
-      - "8000:8000"
-    volumes:
-      - ./backend/app:/app/app
-      - ./backend/alembic:/app/alembic
-      - ./data/uploads:/app/data/uploads
-      - ./data/normalized:/app/data/normalized
-    environment:
-      - APP_ENV=local
-      - DATABASE_URL=postgresql+psycopg://soc_user:soc_password@postgres:5432/soc_anomaly
-      - UPLOAD_DIRECTORY=/app/data/uploads
-      - NORMALIZED_DIRECTORY=/app/data/normalized
+      - "127.0.0.1:${BACKEND_PORT:-8001}:8000"
+    environment: *backend-environment
     depends_on:
-      postgres:
+      migrations:
+        condition: service_completed_successfully
+      redis:
         condition: service_healthy
+    volumes: *backend-volumes
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["rq", "worker", "--url", "redis://redis:6379/0", "analysis"]
+    environment: *backend-environment
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    volumes: *backend-volumes
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
-    container_name: soc-anomaly-postgres
     environment:
       POSTGRES_DB: soc_anomaly
       POSTGRES_USER: soc_user
       POSTGRES_PASSWORD: soc_password
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U soc_user -d soc_anomaly"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+  redis_data:
