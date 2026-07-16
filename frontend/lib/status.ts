@@ -20,6 +20,14 @@ const statusLabels: Record<string, string> = {
   uploading: "Загружается",
   success: "Загружен",
   error: "Ошибка",
+  day: "День",
+  week: "Неделя",
+  month: "Месяц",
+  range: "Диапазон",
+  all: "Все данные",
+  features: "Построение признаков",
+  scoring: "ML-скоринг",
+  explain: "Объяснения",
 };
 
 export function statusLabel(value: string): string {

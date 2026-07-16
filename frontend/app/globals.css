@@ -851,12 +851,204 @@ textarea.control {
   color: var(--muted);
 }
 
+.run-form-card {
+  padding: clamp(22px, 4vw, 34px);
+}
+.run-form-card form {
+  display: grid;
+  gap: 24px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.upload-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.upload-picker legend {
+  padding: 0 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.upload-picker label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+}
+.upload-picker input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+}
+.upload-picker strong,
+.upload-picker small {
+  display: block;
+}
+.upload-picker small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+.run-summary {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px solid rgba(120, 242, 189, 0.25);
+  border-radius: 11px;
+  background: rgba(120, 242, 189, 0.055);
+}
+.run-summary > svg {
+  width: 21px;
+  color: var(--accent);
+}
+.run-summary strong,
+.run-summary small {
+  display: block;
+}
+.run-summary small {
+  margin-top: 4px;
+  color: var(--muted);
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filter-row .field {
+  min-width: 170px;
+}
+.run-overview {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.25fr);
+  gap: 16px;
+}
+.run-progress {
+  display: grid;
+  gap: 8px;
+}
+.run-progress > strong {
+  font-size: 42px;
+  letter-spacing: -0.05em;
+}
+.run-progress > span {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--line);
+}
+.run-progress > span > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+.run-progress small {
+  color: var(--muted);
+}
+.stage-list {
+  display: grid;
+  gap: 7px;
+}
+.stage-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.stage-item > span {
+  color: var(--muted);
+  font:
+    11px ui-monospace,
+    monospace;
+}
+.stage-item strong,
+.stage-item small {
+  display: block;
+}
+.stage-item small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+.stage-item--active {
+  border-color: rgba(120, 242, 189, 0.35);
+  background: rgba(120, 242, 189, 0.05);
+}
+.error-card {
+  padding: 20px;
+  border-color: rgba(255, 107, 118, 0.4);
+  background: rgba(255, 107, 118, 0.06);
+}
+.error-card p {
+  margin-bottom: 0;
+  color: #ffb1b7;
+}
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.link-grid > a,
+.link-grid > div {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 140px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(7, 16, 15, 0.42);
+}
+.link-grid > a:hover {
+  border-color: var(--line-bright);
+  transform: translateY(-1px);
+}
+.link-grid svg {
+  width: 21px;
+  color: var(--accent);
+}
+.link-grid small,
+.link-grid > div > div a {
+  color: var(--muted);
+  font-size: 11px;
+}
+.link-grid > div > div {
+  display: grid;
+  gap: 3px;
+}
+
 @media (max-width: 1060px) {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .hero-panel {
     grid-template-columns: 1fr;
+  }
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .link-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 760px) {
@@ -908,5 +1100,11 @@ textarea.control {
   }
   .dropzone {
     justify-content: start;
+  }
+  .run-overview,
+  .form-grid,
+  .upload-picker,
+  .link-grid {
+    grid-template-columns: 1fr;
   }
 }
