@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/field";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Table } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/features/auth/session-provider";
 import { apiFetch } from "@/lib/api/client";
 import type { AnalysisRunRead, ReportRead } from "@/lib/api/types";
 import { formatDate } from "@/lib/format";
@@ -24,6 +25,7 @@ export function ReportWorkspace() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+  const { canMutate } = useSession();
   useEffect(() => {
     let active = true;
     Promise.all([apiFetch<AnalysisRunRead[]>("/runs"), apiFetch<ReportRead[]>("/reports")])
@@ -102,7 +104,12 @@ export function ReportWorkspace() {
               </option>
             ))}
           </Select>
-          <Button disabled={!runId} loading={creating} icon={<FilePlus2 />} onClick={createReport}>
+          <Button
+            disabled={!runId || !canMutate}
+            loading={creating}
+            icon={<FilePlus2 />}
+            onClick={createReport}
+          >
             Создать отчёт
           </Button>
         </div>

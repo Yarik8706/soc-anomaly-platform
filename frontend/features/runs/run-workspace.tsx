@@ -8,6 +8,7 @@ import { Input, Select } from "@/components/ui/field";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Table } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/features/auth/session-provider";
 import { apiFetch } from "@/lib/api/client";
 import type { AnalysisRunRead, AnalysisScope, UploadedFileRead } from "@/lib/api/types";
 import { formatDate, shortId } from "@/lib/format";
@@ -41,6 +42,7 @@ export function RunWorkspace() {
   const [scopeFilter, setScopeFilter] = useState("");
   const router = useRouter();
   const toast = useToast();
+  const { canMutate } = useSession();
 
   useEffect(() => {
     let active = true;
@@ -119,7 +121,11 @@ export function RunWorkspace() {
         title="Запуски анализа"
         description="Создавайте ML-анализ и следите за выполнением каждого этапа."
         actions={
-          <Button icon={<Plus />} onClick={() => setShowForm((value) => !value)}>
+          <Button
+            disabled={!canMutate}
+            icon={<Plus />}
+            onClick={() => setShowForm((value) => !value)}
+          >
             {showForm ? "Скрыть форму" : "Новый запуск"}
           </Button>
         }
@@ -233,7 +239,12 @@ export function RunWorkspace() {
               </div>
             </div>
             <div className="form-actions">
-              <Button type="submit" loading={submitting} disabled={!uploads.length} icon={<Play />}>
+              <Button
+                type="submit"
+                loading={submitting}
+                disabled={!uploads.length || !canMutate}
+                icon={<Play />}
+              >
                 Подтвердить и запустить
               </Button>
             </div>

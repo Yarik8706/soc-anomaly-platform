@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/field";
 import { ErrorState, LoadingState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/features/auth/session-provider";
 import { apiFetch } from "@/lib/api/client";
 import type { AnomalyDetail, AnomalyStatus } from "@/lib/api/types";
 import { formatDate } from "@/lib/format";
@@ -33,6 +34,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const toast = useToast();
+  const { canMutate } = useSession();
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -214,6 +216,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
               id="anomaly-status"
               label="Новый статус"
               value={status}
+              disabled={!canMutate}
               onChange={(e) => {
                 setStatus(e.target.value as AnomalyStatus);
                 setFormError(null);
@@ -230,6 +233,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
               <textarea
                 id="workflow-comment"
                 className="control"
+                disabled={!canMutate}
                 value={comment}
                 aria-invalid={Boolean(formError)}
                 aria-describedby={formError ? "workflow-error" : undefined}
@@ -249,7 +253,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
                 </p>
               )}
             </div>
-            <Button type="submit" loading={saving} icon={<Save />}>
+            <Button type="submit" loading={saving} disabled={!canMutate} icon={<Save />}>
               Сохранить решение
             </Button>
           </form>

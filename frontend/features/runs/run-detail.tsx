@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ErrorState, LoadingState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/features/auth/session-provider";
 import { apiFetch } from "@/lib/api/client";
 import type { AnalysisRunRead } from "@/lib/api/types";
 import { formatDate } from "@/lib/format";
@@ -22,6 +23,7 @@ export function RunDetail({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
   const toast = useToast();
+  const { canMutate } = useSession();
   const load = useCallback(async () => {
     try {
       const item = await apiFetch<AnalysisRunRead>(`/runs/${id}`);
@@ -95,7 +97,13 @@ export function RunDetail({ id }: { id: string }) {
         description={`${statusLabel(run.scope)} · создан ${formatDate(run.created_at)}`}
         actions={
           run.status === "failed" || run.status === "completed" ? (
-            <Button variant="secondary" loading={retrying} icon={<RefreshCcw />} onClick={retry}>
+            <Button
+              disabled={!canMutate}
+              variant="secondary"
+              loading={retrying}
+              icon={<RefreshCcw />}
+              onClick={retry}
+            >
               Запустить повторно
             </Button>
           ) : undefined

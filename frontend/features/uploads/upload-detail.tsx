@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ErrorState, LoadingState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/features/auth/session-provider";
 import { apiFetch } from "@/lib/api/client";
 import type { NormalizedArtifact, UploadedFileRead } from "@/lib/api/types";
 import { formatBytes, formatDate } from "@/lib/format";
@@ -20,6 +21,7 @@ export function UploadDetail({ id }: { id: string }) {
   const [busy, setBusy] = useState<"validate" | "normalize" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+  const { canMutate } = useSession();
   const load = useCallback(async () => {
     setError(null);
     try {
@@ -83,7 +85,7 @@ export function UploadDetail({ id }: { id: string }) {
             <Button
               variant="secondary"
               loading={busy === "validate"}
-              disabled={Boolean(busy)}
+              disabled={Boolean(busy) || !canMutate}
               icon={<FileCog />}
               onClick={() => runAction("validate")}
             >
@@ -91,7 +93,7 @@ export function UploadDetail({ id }: { id: string }) {
             </Button>
             <Button
               loading={busy === "normalize"}
-              disabled={Boolean(busy) || upload.status === "invalid"}
+              disabled={Boolean(busy) || upload.status === "invalid" || !canMutate}
               icon={<WandSparkles />}
               onClick={() => runAction("normalize")}
             >

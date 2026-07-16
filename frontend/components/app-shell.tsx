@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  ScrollText,
   ShieldCheck,
   UploadCloud,
   Users,
@@ -14,7 +15,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "@/features/auth/session-provider";
 
 const navigation = [
   { href: "/", label: "Обзор", icon: LayoutDashboard },
@@ -23,12 +26,20 @@ const navigation = [
   { href: "/anomalies", label: "Аномалии", icon: ShieldCheck },
   { href: "/reports", label: "Отчёты", icon: FileText },
   { href: "/metrics", label: "Метрики", icon: BarChart3 },
-  { href: "/admin/users", label: "Пользователи", icon: Users },
+  { href: "/admin/users", label: "Пользователи", icon: Users, admin: true },
+  { href: "/admin/audit", label: "Аудит", icon: ScrollText, admin: true },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useSession();
   const [open, setOpen] = useState(false);
+
+  async function signOut() {
+    await logout();
+    router.replace("/login");
+  }
 
   return (
     <div className="app-shell">
@@ -51,29 +62,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </span>
         </Link>
         <nav aria-label="Основная навигация">
-          {navigation.map(({ href, label, icon: Icon }) => {
-            const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={active ? "nav-link nav-link--active" : "nav-link"}
-                aria-current={active ? "page" : undefined}
-                onClick={() => setOpen(false)}
-              >
-                <Icon aria-hidden="true" />
-                <span>{label}</span>
-              </Link>
-            );
-          })}
+          {navigation
+            .filter((item) => !item.admin || user?.role === "admin")
+            .map(({ href, label, icon: Icon }) => {
+              const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={active ? "nav-link nav-link--active" : "nav-link"}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => setOpen(false)}
+                >
+                  <Icon aria-hidden="true" />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
         </nav>
         <div className="sidebar-footer">
           <span className="system-dot" aria-hidden="true" />
           <span>
-            <strong>Система доступна</strong>
-            <small>API · Worker · DB</small>
+            <strong>{user?.email}</strong>
+            <small>{user?.role}</small>
           </span>
-          <button aria-label="Выйти">
+          <button aria-label="Выйти" onClick={signOut}>
             <LogOut />
           </button>
         </div>

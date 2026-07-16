@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Table } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/features/auth/session-provider";
 import { apiFetch } from "@/lib/api/client";
 import { ApiError, errorMessage } from "@/lib/api/errors";
 import type { UploadedFileRead } from "@/lib/api/types";
@@ -32,6 +33,7 @@ export function UploadWorkspace() {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
+  const { canMutate } = useSession();
 
   const loadUploads = useCallback(async () => {
     setLoadError(null);
@@ -141,7 +143,11 @@ export function UploadWorkspace() {
         title="Загрузки"
         description="Проверьте и нормализуйте SIEM/NGFW файлы перед ML-анализом."
         actions={
-          <Button icon={<FilePlus2 />} onClick={() => inputRef.current?.click()}>
+          <Button
+            disabled={!canMutate}
+            icon={<FilePlus2 />}
+            onClick={() => inputRef.current?.click()}
+          >
             Выбрать файлы
           </Button>
         }
@@ -152,6 +158,7 @@ export function UploadWorkspace() {
         type="file"
         accept=".csv,.tsv,.txt"
         multiple
+        disabled={!canMutate}
         onChange={(event) => addFiles([...(event.target.files ?? [])])}
       />
       <Card
@@ -164,7 +171,7 @@ export function UploadWorkspace() {
         onDrop={(event) => {
           event.preventDefault();
           setDragging(false);
-          addFiles([...event.dataTransfer.files]);
+          if (canMutate) addFiles([...event.dataTransfer.files]);
         }}
       >
         <UploadCloud aria-hidden="true" />
@@ -182,7 +189,7 @@ export function UploadWorkspace() {
             </div>
             <Button
               loading={queue.some(({ state }) => state === "uploading")}
-              disabled={!readyCount}
+              disabled={!readyCount || !canMutate}
               onClick={uploadBatch}
               icon={<UploadCloud />}
             >

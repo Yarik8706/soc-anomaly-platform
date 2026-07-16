@@ -1,13 +1,11 @@
+import { backendUrl, sessionCookie } from "@/lib/server/backend";
 import { type NextRequest, NextResponse } from "next/server";
-
-const backendUrl = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:8001";
-const sessionCookie = "soc_session";
 
 type RouteContext = { params: Promise<{ path: string[] }> };
 
 async function proxy(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
-  const target = new URL(path.join("/"), `${backendUrl.replace(/\/$/, "")}/`);
+  const target = new URL(path.join("/"), `${backendUrl}/`);
   target.search = request.nextUrl.search;
 
   const headers = new Headers();
