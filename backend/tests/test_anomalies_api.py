@@ -1,4 +1,5 @@
 from datetime import date
+from uuid import uuid4
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -10,6 +11,18 @@ from app.db.base import Base
 from app.main import app
 from app.models.analysis_run import AnalysisRun
 from app.models.anomaly import Anomaly, AnomalyExplanation
+from app.models.user import User
+from app.services.auth import get_current_user
+
+
+def _analyst() -> User:
+    return User(
+        id=uuid4(),
+        email="analyst@example.test",
+        password_hash="unused",
+        role="analyst",
+        is_active=True,
+    )
 
 
 def _test_engine():
@@ -70,6 +83,7 @@ def test_anomaly_dashboard_filters_counters_and_detail() -> None:
             yield db
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = _analyst
     try:
         with TestClient(app) as client:
             response = client.get("/anomalies", params={"entity_type": "user"})
@@ -113,6 +127,7 @@ def test_anomaly_workflow_requires_resolution_comment_and_keeps_history() -> Non
             yield db
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = _analyst
     try:
         with TestClient(app) as client:
             invalid = client.patch(

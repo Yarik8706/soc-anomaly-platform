@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.models.analysis_run import AnalysisRun
 from app.models.report import Report
+from app.models.user import User
+from app.schemas.auth import UserRole
 from app.schemas.reports import ReportRead
+from app.services.audit import record_audit_event
+from app.services.auth import require_roles
 from app.services.reports import (
     create_report,
     get_report,
@@ -18,18 +22,36 @@ from app.services.reports import (
 )
 from app.services.task_queue import TaskQueueError
 
-router = APIRouter(prefix="/reports", tags=["reports"])
+router = APIRouter(
+    prefix="/reports",
+    tags=["reports"],
+    dependencies=[Depends(require_roles(*UserRole))],
+)
+write_required = require_roles(UserRole.admin, UserRole.analyst)
 
 
 @router.post("/runs/{run_id}", response_model=ReportRead, status_code=status.HTTP_202_ACCEPTED)
-def request_report(run_id: UUID, db: Session = Depends(get_db)) -> ReportRead:
+def request_report(
+    run_id: UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(write_required),
+) -> ReportRead:
     run = db.get(AnalysisRun, run_id)
     if run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Analysis run not found"
         )
     try:
-        return report_read(create_report(db, run))
+        report = create_report(db, run)
+        record_audit_event(
+            db,
+            user,
+            "report.create",
+            "report",
+            str(report.id),
+            details={"run_id": str(run.id)},
+        )
+        return report_read(report)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     except TaskQueueError as exc:
@@ -64,6 +86,7 @@ def download_report(
     report_id: UUID,
     format_name: Literal["markdown", "pdf"],
     db: Session = Depends(get_db),
+    user: User = Depends(require_roles(*UserRole)),
 ):
     report = _get_report_or_404(db, report_id)
     try:
@@ -71,6 +94,14 @@ def download_report(
     except FileNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     media_type = "text/markdown; charset=utf-8" if format_name == "markdown" else "application/pdf"
+    record_audit_event(
+        db,
+        user,
+        "report.export",
+        "report",
+        str(report.id),
+        details={"format": format_name},
+    )
     return FileResponse(path, media_type=media_type, filename=path.name)
 
 

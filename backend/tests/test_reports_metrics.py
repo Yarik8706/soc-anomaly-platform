@@ -1,5 +1,6 @@
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,6 +13,8 @@ from app.db.base import Base
 from app.main import app
 from app.models.analysis_run import AnalysisRun
 from app.models.anomaly import Anomaly, AnomalyExplanation
+from app.models.user import User
+from app.services.auth import get_current_user
 from app.services.metrics import get_proxy_metrics
 from app.services.reports import create_report, generate_report
 
@@ -91,6 +94,13 @@ def test_report_generation_creates_markdown_pdf_and_download_endpoints(
             yield db
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = lambda: User(
+        id=uuid4(),
+        email="analyst@example.test",
+        password_hash="unused",
+        role="analyst",
+        is_active=True,
+    )
     try:
         with TestClient(app) as client:
             detail = client.get(f"/reports/{report_id}")

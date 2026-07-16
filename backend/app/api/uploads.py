@@ -4,8 +4,12 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
+from app.models.user import User
 from app.models.uploaded_file import UploadedFile
 from app.schemas.uploads import UploadedFileRead
+from app.schemas.auth import UserRole
+from app.services.audit import record_audit_event
+from app.services.auth import require_roles
 from app.services.uploads import (
     EmptyFileError,
     FileTooLargeError,
@@ -20,7 +24,12 @@ from app.services.uploads import (
 )
 from app.services.log_normalization import LogNormalizationError
 
-router = APIRouter(prefix="/uploads", tags=["uploads"])
+router = APIRouter(
+    prefix="/uploads",
+    tags=["uploads"],
+    dependencies=[Depends(require_roles(*UserRole))],
+)
+write_required = require_roles(UserRole.admin, UserRole.analyst)
 
 
 @router.get("", response_model=list[UploadedFileRead])
@@ -39,12 +48,21 @@ def get_uploads(db: Session = Depends(get_db)) -> list[UploadedFileRead]:
 async def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    user: User = Depends(write_required),
 ) -> UploadedFileRead:
     try:
         uploaded_file = await save_uploaded_file(
             db=db,
             file=file,
-            uploaded_by=None,
+            uploaded_by=user.id,
+        )
+        record_audit_event(
+            db,
+            user,
+            "upload.create",
+            "uploaded_file",
+            str(uploaded_file.id),
+            details={"filename": uploaded_file.filename, "size": uploaded_file.size},
         )
         return UploadedFileRead.model_validate(uploaded_file)
 
@@ -84,13 +102,23 @@ async def upload_file(
 async def upload_files(
     files: list[UploadFile] = File(...),
     db: Session = Depends(get_db),
+    user: User = Depends(write_required),
 ) -> list[UploadedFileRead]:
     try:
         uploaded_files = await save_uploaded_files(
             db=db,
             files=files,
-            uploaded_by=None,
+            uploaded_by=user.id,
         )
+        for uploaded_file in uploaded_files:
+            record_audit_event(
+                db,
+                user,
+                "upload.create",
+                "uploaded_file",
+                str(uploaded_file.id),
+                details={"filename": uploaded_file.filename, "size": uploaded_file.size},
+            )
 
         return [
             UploadedFileRead.model_validate(uploaded_file)
@@ -139,6 +167,7 @@ def get_upload(
 def validate_upload(
     file_id: UUID,
     db: Session = Depends(get_db),
+    user: User = Depends(write_required),
 ) -> UploadedFileRead:
     uploaded_file = _get_upload_or_404(db, file_id)
     try:
@@ -155,6 +184,7 @@ def validate_upload(
 def normalize_upload(
     file_id: UUID,
     db: Session = Depends(get_db),
+    user: User = Depends(write_required),
 ) -> UploadedFileRead:
     uploaded_file = _get_upload_or_404(db, file_id)
     try:

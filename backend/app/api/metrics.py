@@ -6,9 +6,15 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.models.analysis_run import AnalysisRun
 from app.schemas.metrics import ProxyMetricsRead
+from app.schemas.auth import UserRole
+from app.services.auth import require_roles
 from app.services.metrics import get_proxy_metrics
 
-router = APIRouter(prefix="/metrics", tags=["metrics"])
+router = APIRouter(
+    prefix="/metrics",
+    tags=["metrics"],
+    dependencies=[Depends(require_roles(*UserRole))],
+)
 
 
 @router.get("/runs/{run_id}", response_model=ProxyMetricsRead)

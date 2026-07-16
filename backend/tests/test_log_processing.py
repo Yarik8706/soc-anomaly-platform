@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -10,6 +11,8 @@ from sqlalchemy.pool import StaticPool
 from app.core.config import settings
 from app.db.base import Base
 from app.models.uploaded_file import UploadedFile
+from app.models.user import User
+from app.services.auth import get_current_user
 from app.services.log_normalization import (
     LogNormalizationError,
     NormalizationConfig,
@@ -199,6 +202,13 @@ def test_upload_api_exposes_validation_and_normalization_results(
             yield db
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = lambda: User(
+        id=uuid4(),
+        email="analyst@example.test",
+        password_hash="unused",
+        role="analyst",
+        is_active=True,
+    )
     try:
         with TestClient(app) as client:
             validation_response = client.post(f"/uploads/{file_id}/validate")

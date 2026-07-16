@@ -6,15 +6,24 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
+from app.models.user import User
 from app.schemas.anomalies import (
     AnomalyDetail,
     AnomalyList,
     AnomalyRead,
     AnomalyStatusUpdate,
 )
+from app.schemas.auth import UserRole
+from app.services.audit import record_audit_event
+from app.services.auth import require_roles
 from app.services.anomalies import get_anomaly, list_anomalies, update_anomaly_status
 
-router = APIRouter(prefix="/anomalies", tags=["anomalies"])
+router = APIRouter(
+    prefix="/anomalies",
+    tags=["anomalies"],
+    dependencies=[Depends(require_roles(*UserRole))],
+)
+write_required = require_roles(UserRole.admin, UserRole.analyst)
 
 
 @router.get("", response_model=AnomalyList)
@@ -65,12 +74,22 @@ def change_anomaly_status(
     anomaly_id: UUID,
     payload: AnomalyStatusUpdate,
     db: Session = Depends(get_db),
+    user: User = Depends(write_required),
 ) -> AnomalyDetail:
     anomaly = _get_anomaly_or_404(db, anomaly_id)
     try:
-        updated = update_anomaly_status(db, anomaly, payload)
+        updated = update_anomaly_status(db, anomaly, payload, user.id)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    record_audit_event(
+        db,
+        user,
+        "anomaly.status_change",
+        "anomaly",
+        str(updated.id),
+        severity="critical" if payload.status.value == "incident" else "info",
+        details={"status": payload.status.value, "comment": payload.comment},
+    )
     return AnomalyDetail.model_validate(updated)
 
 
