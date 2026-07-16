@@ -1,18 +1,10 @@
-import { PageHeader } from "@/components/page-header";
-import { EmptyState } from "@/components/ui/states";
+import { MetricsWorkspace } from "@/features/metrics/metrics-workspace";
 
-export default function MetricsPage() {
-  return (
-    <div className="page-stack">
-      <PageHeader
-        eyebrow="Model health"
-        title="Метрики качества"
-        description="Распределения score, стабильность топа и объясняющие признаки."
-      />
-      <EmptyState
-        title="Метрики пока недоступны"
-        description="Выберите завершённый запуск после появления результатов."
-      />
-    </div>
-  );
+export default async function MetricsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ run_id?: string }>;
+}) {
+  const { run_id } = await searchParams;
+  return <MetricsWorkspace key={run_id ?? "none"} selectedRun={run_id ?? ""} />;
 }

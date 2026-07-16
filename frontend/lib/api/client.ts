@@ -25,6 +25,16 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   return (await response.json()) as T;
 }
 
+export async function apiText(path: string, init: RequestInit = {}): Promise<string> {
+  const response = await fetch(`${API_PREFIX}${path}`, { ...init, cache: "no-store" });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({ detail: response.statusText }));
+    const detail = payload?.detail ?? payload;
+    throw new ApiError(errorMessage(detail), response.status, detail);
+  }
+  return response.text();
+}
+
 export function toQuery(values: Record<string, string | number | null | undefined>): string {
   const query = new URLSearchParams();
   Object.entries(values).forEach(([key, value]) => {
