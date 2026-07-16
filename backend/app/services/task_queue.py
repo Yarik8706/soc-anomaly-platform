@@ -25,3 +25,20 @@ def enqueue_run(run_id: str) -> str:
     except Exception as exc:
         raise TaskQueueError("Analysis queue is unavailable") from exc
     return job.id
+
+
+def enqueue_report(report_id: str) -> str:
+    from app.tasks import process_report
+
+    try:
+        connection = Redis.from_url(settings.redis_url)
+        job = Queue(settings.analysis_queue, connection=connection).enqueue(
+            process_report,
+            report_id,
+            job_timeout="30m",
+            result_ttl=86_400,
+            failure_ttl=604_800,
+        )
+    except Exception as exc:
+        raise TaskQueueError("Report queue is unavailable") from exc
+    return job.id
