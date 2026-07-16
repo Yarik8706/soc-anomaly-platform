@@ -20,6 +20,7 @@ class AnalysisRunCreate(BaseModel):
     start_date: date | None = None
     end_date: date | None = None
     parameters: dict[str, Any] | None = None
+    upload_ids: list[UUID] = Field(min_length=1)
 
     @model_validator(mode="after")
     def validate_dates(self):
@@ -52,8 +53,15 @@ class AnalysisRunRead(BaseModel):
     start_date: str | None
     end_date: str | None
     parameters: dict[str, Any] | None
+    upload_ids: list[str] | None
+    stages: dict[str, Any] | None
+    artifacts: dict[str, Any] | None
+    current_stage: str | None
+    job_id: str | None
+    attempts: int
     error_message: str | None
     created_at: datetime
+    started_at: datetime | None
     finished_at: datetime | None
 
     model_config = {

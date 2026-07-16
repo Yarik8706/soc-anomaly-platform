@@ -13,7 +13,11 @@ dependencies = [
     "sqlalchemy (>=2.0.51,<3.0.0)",
     "psycopg[binary] (>=3.3.4,<4.0.0)",
     "alembic (>=1.18.5,<2.0.0)",
-    "python-multipart (>=0.0.32,<0.0.33)"
+    "python-multipart (>=0.0.32,<0.0.33)",
+    "pandas (>=3.0.3,<4.0.0)",
+    "scikit-learn (>=1.9.0,<2.0.0)",
+    "redis (>=8.0.1,<9.0.0)",
+    "rq (>=2.10.0,<3.0.0)"
 ]
 
 
