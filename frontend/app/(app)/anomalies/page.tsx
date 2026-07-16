@@ -1,18 +1,11 @@
-import { PageHeader } from "@/components/page-header";
-import { EmptyState } from "@/components/ui/states";
+import { AnomalyWorkspace } from "@/features/anomalies/anomaly-workspace";
+import { parseAnomalyFilters } from "@/features/anomalies/query";
 
-export default function AnomaliesPage() {
-  return (
-    <div className="page-stack">
-      <PageHeader
-        eyebrow="Analyst workspace"
-        title="Аномалии"
-        description="Сигналы по пользователям и хостам, требующие внимания."
-      />
-      <EmptyState
-        title="Аномалий пока нет"
-        description="После завершённого запуска результаты появятся здесь."
-      />
-    </div>
-  );
+export default async function AnomaliesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const filters = parseAnomalyFilters(await searchParams);
+  return <AnomalyWorkspace key={JSON.stringify(filters)} initialFilters={filters} />;
 }

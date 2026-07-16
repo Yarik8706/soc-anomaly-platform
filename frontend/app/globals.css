@@ -1037,6 +1037,149 @@ textarea.control {
   gap: 3px;
 }
 
+.anomaly-counters .metric-card {
+  min-height: 150px;
+}
+.filter-card {
+  padding: 20px;
+  box-shadow: none;
+}
+.anomaly-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  align-items: end;
+  gap: 12px;
+}
+.anomaly-filter-grid .button {
+  width: 100%;
+}
+.table-subline {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+}
+.score-cell {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.pagination > div {
+  display: flex;
+  gap: 8px;
+}
+.anomaly-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.68fr) minmax(0, 1.32fr);
+  gap: 16px;
+}
+.anomaly-score {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px;
+  border: 1px solid rgba(120, 242, 189, 0.3);
+  border-radius: 12px;
+  background: rgba(120, 242, 189, 0.05);
+}
+.anomaly-score > svg {
+  width: 28px;
+  color: var(--accent);
+}
+.anomaly-score strong,
+.anomaly-score small {
+  display: block;
+}
+.anomaly-score strong {
+  font-size: 25px;
+}
+.anomaly-score small {
+  color: var(--muted);
+}
+.explanation-list {
+  display: grid;
+  gap: 12px;
+}
+.explanation-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.7fr) minmax(180px, 1.3fr) 80px;
+  align-items: center;
+  gap: 14px;
+}
+.explanation-row > div strong,
+.explanation-row > div small {
+  display: block;
+}
+.explanation-row > div small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+.explanation-row > span {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--line);
+}
+.explanation-row > span > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+.explanation-row > strong {
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.explanation-row > strong.negative {
+  color: var(--info);
+}
+.workflow-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.5fr) minmax(260px, 1.5fr) auto;
+  align-items: end;
+  gap: 14px;
+}
+.activity-timeline {
+  list-style: none;
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+.activity-timeline li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 13px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+}
+.activity-timeline li:last-child {
+  border-bottom: 0;
+}
+.activity-timeline svg {
+  width: 18px;
+  color: var(--accent);
+}
+.activity-timeline p,
+.activity-timeline small {
+  margin: 5px 0 0;
+  color: var(--muted);
+}
+.context-value {
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: var(--muted);
+  font-size: 11px;
+}
+
 @media (max-width: 1060px) {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1046,6 +1189,9 @@ textarea.control {
   }
   .form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .anomaly-filter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .link-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1104,7 +1250,23 @@ textarea.control {
   .run-overview,
   .form-grid,
   .upload-picker,
-  .link-grid {
+  .link-grid,
+  .anomaly-detail-grid,
+  .workflow-form {
     grid-template-columns: 1fr;
+  }
+  .anomaly-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .explanation-row {
+    grid-template-columns: 1fr 70px;
+  }
+  .explanation-row > span {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

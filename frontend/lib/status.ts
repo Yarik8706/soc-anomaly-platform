@@ -28,6 +28,8 @@ const statusLabels: Record<string, string> = {
   features: "Построение признаков",
   scoring: "ML-скоринг",
   explain: "Объяснения",
+  user: "Пользователь",
+  host: "Хост",
 };
 
 export function statusLabel(value: string): string {
