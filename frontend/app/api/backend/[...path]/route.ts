@@ -19,12 +19,20 @@ async function proxy(request: NextRequest, context: RouteContext) {
   if (token) headers.set("authorization", `Bearer ${token}`);
 
   const method = request.method;
-  const response = await fetch(target, {
-    method,
-    headers,
-    body: method === "GET" || method === "HEAD" ? undefined : await request.arrayBuffer(),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(target, {
+      method,
+      headers,
+      body: method === "GET" || method === "HEAD" ? undefined : await request.arrayBuffer(),
+      cache: "no-store",
+    });
+  } catch {
+    return NextResponse.json(
+      { detail: "Backend API недоступен. Проверьте, что сервис запущен." },
+      { status: 502 },
+    );
+  }
 
   const responseHeaders = new Headers();
   for (const name of ["content-type", "content-disposition"]) {
