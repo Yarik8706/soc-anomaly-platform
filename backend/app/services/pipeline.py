@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.models.analysis_run import AnalysisRun
 from app.models.anomaly import Anomaly, AnomalyExplanation
 from app.models.uploaded_file import UploadedFile
+from app.services.anomaly_context import build_anomaly_context
 from app.services.explanations import explain_row, severity_for_rank
 from app.services.features import build_features
 from app.services.scoring import ScoreConfig, score_feature_file
@@ -58,7 +59,12 @@ def execute_analysis_run(db: Session, run: AnalysisRun) -> AnalysisRun:
         db.commit()
 
         scored = _stage(db, run, "scoring", lambda: _score(feature_paths, run))
-        _stage(db, run, "explain", lambda: _persist_anomalies(db, run, feature_paths, scored))
+        _stage(
+            db,
+            run,
+            "explain",
+            lambda: _persist_anomalies(db, run, input_paths, feature_paths, scored),
+        )
         _skip_stage(run, "reports")
         run.status = "completed"
         run.current_stage = None
@@ -153,6 +159,7 @@ def _score(feature_paths: dict[str, Path], run: AnalysisRun) -> dict[str, pd.Dat
 def _persist_anomalies(
     db: Session,
     run: AnalysisRun,
+    input_paths: list[Path],
     feature_paths: dict[str, Path],
     scored: dict[str, pd.DataFrame],
 ) -> int:
@@ -180,7 +187,16 @@ def _persist_anomalies(
                 score=float(row["score"]),
                 rank=int(row["rank"]),
                 summary=f"Unusual {leading} compared with historical baseline",
-                context={"isolation_forest": float(row["score_isolation_forest"]), "lof": float(row["score_lof"])},
+                context={
+                    **build_anomaly_context(
+                        input_paths,
+                        "user" if kind == "users" else "host",
+                        str(row["entity"]),
+                        str(row["date"]),
+                    ),
+                    "isolation_forest": float(row["score_isolation_forest"]),
+                    "lof": float(row["score_lof"]),
+                },
             )
             anomaly.explanations = [AnomalyExplanation(**item) for item in explanations]
             db.add(anomaly)

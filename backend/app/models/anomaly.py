@@ -34,6 +34,11 @@ class Anomaly(Base):
     explanations: Mapped[list["AnomalyExplanation"]] = relationship(
         back_populates="anomaly", cascade="all, delete-orphan"
     )
+    activities: Mapped[list["AnomalyActivity"]] = relationship(
+        back_populates="anomaly",
+        cascade="all, delete-orphan",
+        order_by="AnomalyActivity.created_at",
+    )
 
 
 class AnomalyExplanation(Base):
@@ -51,3 +56,23 @@ class AnomalyExplanation(Base):
     contribution: Mapped[float] = mapped_column(Float)
 
     anomaly: Mapped[Anomaly] = relationship(back_populates="explanations")
+
+
+class AnomalyActivity(Base):
+    __tablename__ = "anomaly_activities"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    anomaly_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("anomalies.id", ondelete="CASCADE"), index=True
+    )
+    actor_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    previous_status: Mapped[str] = mapped_column(String(30))
+    new_status: Mapped[str] = mapped_column(String(30))
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(UTC).replace(tzinfo=None)
+    )
+
+    anomaly: Mapped[Anomaly] = relationship(back_populates="activities")
