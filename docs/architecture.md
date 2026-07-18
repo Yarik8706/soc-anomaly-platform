@@ -122,26 +122,32 @@ SOC-отчет.
 - Packaging: Poetry
 - Local deploy: Docker Compose
 
-## Migration path from current scripts
+## Analysis pipeline
 
-1. `python_script.py` -> сервис нормализации логов.
-2. `build_features_v2.py` -> сервис построения признаков.
-3. `preprocess_features.py` -> preprocessing service.
-4. `train_anomaly_models.py` -> scoring service.
-5. `explain_anomalies.py` -> explanation service.
-6. `soc_report.py` -> report generation service.
-7. `evaluate_proxy_metrics.py` -> metrics service.
+Конвейер анализа реализован непосредственно в backend и не зависит от внешних
+legacy-скриптов. Worker последовательно выполняет:
 
-## First MVP flow
+1. нормализацию загруженных SIEM- и PAN-логов с общей картой анонимизации;
+2. выбор всех дат, входящих в заданный день, неделю, месяц или диапазон;
+3. построение и preprocessing раздельных пользовательских и хостовых признаков;
+4. полный скоринг Isolation Forest и Local Outlier Factor для каждой сущности;
+5. explainability и сохранение полного распределения результатов;
+6. расчет proxy-метрик и исследование устойчивости модели, если это предусмотрено режимом запуска;
+7. агрегацию статистики и трендов за весь период;
+8. создание графических, Markdown, PDF и SOC-отчетов;
+9. сохранение manifest, конфигурации запуска и артефактов воспроизводимости.
+
+## Application flow
 
 1. Пользователь загружает файлы.
 2. Backend сохраняет файлы и метаданные.
 3. Пользователь запускает анализ.
 4. Backend создает `AnalysisRun`.
-5. Worker выполняет ML pipeline.
-6. Результаты сохраняются в БД и файловое хранилище.
-7. Frontend показывает список аномалий.
-8. Пользователь открывает карточку аномалии и отчет.
+5. Worker выполняет выбранный режим конвейера (`report`, `metrics`, `report+metrics`, `full` или `dry-run`).
+6. Результаты всех сущностей сохраняются в БД и файловое хранилище.
+7. После анализа автоматически формируются требуемые метрики и отчеты.
+8. Frontend показывает аномалии, статистику, тренды, метрики и созданные артефакты.
+9. Пользователь открывает карточку аномалии, контекст или отчет.
 
 ## Backend boundaries
 
