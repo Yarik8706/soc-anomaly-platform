@@ -21,6 +21,7 @@ class Report(Base):
     status: Mapped[str] = mapped_column(String(30), default="queued", index=True)
     markdown_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     pdf_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    context_csv_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     job_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

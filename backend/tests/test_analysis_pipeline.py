@@ -51,11 +51,49 @@ def test_feature_builder_and_scoring_support_users_and_hosts(tmp_path: Path) -> 
     hosts = pd.read_csv(outputs["hosts"])
     assert {"user001", "user002", "user003"} == set(users["entity"])
     assert {"host-a", "host-b"} == set(hosts["entity"])
+    expected_features = {
+        "day_of_week",
+        "is_weekend",
+        "siem_events_total",
+        "siem_unique_destination_addr",
+        "siem_unique_source_process",
+        "siem_unique_event_class",
+        "siem_unique_category",
+        "siem_unique_name",
+        "siem_unique_hours",
+        "siem_night_share",
+        "siem_business_share",
+        "pan_events_total",
+        "pan_unique_destination_addr",
+        "pan_unique_source_process",
+        "pan_unique_event_class",
+        "pan_unique_category",
+        "pan_unique_name",
+        "pan_unique_hours",
+        "pan_night_share",
+        "pan_business_share",
+        "pan_share_of_all_events",
+        "siem_unique_users",
+        "pan_unique_users",
+    }
+    assert expected_features.issubset(users.columns)
 
     scores = score_feature_file(
-        outputs["users"], "2026-07-15", ScoreConfig(top_n=10, n_estimators=10)
+        outputs["users"], "2026-07-15", ScoreConfig(top_n=1, n_estimators=10)
     )
-    assert {"score_isolation_forest", "score_lof", "score", "rank"}.issubset(scores)
+    assert len(scores) == 3  # top_n is a presentation setting, not a persistence limit.
+    assert {
+        "score_isolation_forest",
+        "score_isolation_forest_norm",
+        "rank_isolation_forest",
+        "score_lof",
+        "score_lof_norm",
+        "rank_lof",
+        "score_combined",
+        "rank_combined",
+        "score",
+        "rank",
+    }.issubset(scores)
     assert scores["rank"].tolist() == list(range(1, len(scores) + 1))
 
 
@@ -100,10 +138,19 @@ def test_pipeline_persists_stage_history_artifacts_and_explanations(
         assert result.stages["features"]["status"] == "completed"
         assert result.stages["scoring"]["status"] == "completed"
         assert result.stages["explain"]["status"] == "completed"
+        assert result.stages["metrics"]["status"] == "completed"
+        assert result.stages["reports"]["status"] == "completed"
         assert Path(result.artifacts["features"]["users"]).is_file()
+        assert Path(result.artifacts["scores"]["users"]).is_file()
+        assert Path(result.artifacts["scores"]["users_2026-07-15"]).is_file()
+        assert Path(result.artifacts["metadata"]["manifest"]).is_file()
+        assert result.artifacts["reports"]["context_csv"]
         anomalies = list(db.scalars(select(Anomaly).where(Anomaly.run_id == run.id)))
         assert anomalies
         assert all(anomaly.explanations for anomaly in anomalies)
+        assert all(anomaly.score_combined is not None for anomaly in anomalies)
+        assert all(anomaly.score_isolation_forest is not None for anomaly in anomalies)
+        assert all(anomaly.score_lof_norm is not None for anomaly in anomalies)
         assert {anomaly.entity_type for anomaly in anomalies} == {"user", "host"}
 
 
@@ -132,3 +179,46 @@ def test_failed_or_completed_run_can_be_queued_again(
         retried = retry_analysis_run(db, queued)
         assert retried.status == "queued"
         assert retried.attempts == 2
+
+
+def test_dry_run_validates_inputs_and_finishes_every_stage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    input_path = tmp_path / "normalized.csv"
+    _normalized_log(input_path)
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    from app.services import pipeline
+
+    monkeypatch.setattr(pipeline.settings, "analysis_directory", tmp_path / "runs")
+    with Session(engine) as db:
+        upload = UploadedFile(
+            filename="events.csv",
+            content_type="text/csv",
+            size=input_path.stat().st_size,
+            storage_path=str(input_path),
+            status="normalized",
+            normalization_result={"artifacts": [{"path": str(input_path)}]},
+        )
+        db.add(upload)
+        db.commit()
+        db.refresh(upload)
+        run = AnalysisRun(
+            status="queued",
+            scope="all",
+            upload_ids=[str(upload.id)],
+            parameters={"mode": "dry-run"},
+        )
+        db.add(run)
+        db.commit()
+        db.refresh(run)
+
+        result = execute_analysis_run(db, run)
+
+        assert result.status == "completed"
+        assert result.stages["import"]["status"] == "completed"
+        assert all(
+            result.stages[name]["status"] == "skipped"
+            for name in ("features", "scoring", "explain", "metrics", "reports")
+        )
+        assert not any(stage["status"] == "pending" for stage in result.stages.values())

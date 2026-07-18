@@ -137,6 +137,20 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
               <dd>{formatDate(anomaly.date)}</dd>
             </div>
             <div>
+              <dt>Isolation Forest</dt>
+              <dd>
+                {formatScore(anomaly.score_isolation_forest)} · norm{" "}
+                {formatScore(anomaly.score_isolation_forest_norm)} · rank #{anomaly.rank_isolation_forest ?? "—"}
+              </dd>
+            </div>
+            <div>
+              <dt>LOF</dt>
+              <dd>
+                {formatScore(anomaly.score_lof)} · norm {formatScore(anomaly.score_lof_norm)} ·
+                rank #{anomaly.rank_lof ?? "—"}
+              </dd>
+            </div>
+            <div>
               <dt>Run ID</dt>
               <dd className="mono">{anomaly.run_id}</dd>
             </div>
@@ -295,4 +309,8 @@ function renderContext(value: unknown): React.ReactNode {
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean")
     return String(value);
   return <code className="context-value">{JSON.stringify(value)}</code>;
+}
+
+function formatScore(value: number | null | undefined): string {
+  return value === null || value === undefined ? "—" : value.toFixed(4);
 }

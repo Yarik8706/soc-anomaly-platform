@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.analysis_run import AnalysisRun
-from app.schemas.analysis_run import AnalysisRunCreate
+from app.schemas.analysis_run import AnalysisParameters, AnalysisRunCreate
 from app.services.pipeline import initial_stages
 from app.services.task_queue import enqueue_run
 
@@ -20,7 +20,7 @@ def create_analysis_run(db: Session, payload: AnalysisRunCreate) -> AnalysisRun:
         target_date=_date_to_str(payload.target_date),
         start_date=_date_to_str(payload.start_date),
         end_date=_date_to_str(payload.end_date),
-        parameters=payload.parameters,
+        parameters=(payload.parameters or AnalysisParameters()).model_dump(mode="json"),
         upload_ids=[str(value) for value in payload.upload_ids],
         stages=initial_stages(),
         artifacts={},

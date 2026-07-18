@@ -84,7 +84,7 @@ def get_report_content(report_id: UUID, db: Session = Depends(get_db)) -> str:
 @router.get("/{report_id}/download/{format_name}", response_class=FileResponse)
 def download_report(
     report_id: UUID,
-    format_name: Literal["markdown", "pdf"],
+    format_name: Literal["markdown", "pdf", "context"],
     db: Session = Depends(get_db),
     user: User = Depends(require_roles(*UserRole)),
 ):
@@ -93,7 +93,11 @@ def download_report(
         path = report_path(report, format_name)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    media_type = "text/markdown; charset=utf-8" if format_name == "markdown" else "application/pdf"
+    media_type = {
+        "markdown": "text/markdown; charset=utf-8",
+        "pdf": "application/pdf",
+        "context": "text/csv; charset=utf-8",
+    }[format_name]
     record_audit_event(
         db,
         user,

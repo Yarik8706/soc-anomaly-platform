@@ -28,6 +28,10 @@ const statusLabels: Record<string, string> = {
   features: "Построение признаков",
   scoring: "ML-скоринг",
   explain: "Объяснения",
+  metrics: "Proxy-метрики",
+  reports: "Отчётность",
+  import: "Подготовка данных",
+  skipped: "Пропущен режимом",
   user: "Пользователь",
   host: "Хост",
 };

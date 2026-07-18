@@ -43,6 +43,14 @@ class AnomalyRead(BaseModel):
     severity: str
     score: float
     rank: int
+    score_isolation_forest: float | None = None
+    score_isolation_forest_norm: float | None = None
+    rank_isolation_forest: int | None = None
+    score_lof: float | None = None
+    score_lof_norm: float | None = None
+    rank_lof: int | None = None
+    score_combined: float | None = None
+    rank_combined: int | None = None
     summary: str
     status: str
     context: dict[str, Any] | None

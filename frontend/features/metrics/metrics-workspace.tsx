@@ -98,6 +98,18 @@ export function MetricsWorkspace({ selectedRun }: { selectedRun: string }) {
             <HistogramChart title="Пользователи" histogram={metrics.score_distributions.user} />
             <HistogramChart title="Хосты" histogram={metrics.score_distributions.host} />
           </section>
+          {metrics.distribution_statistics ? (
+            <section className="metrics-grid">
+              <DistributionCard
+                title="Статистика пользователей"
+                values={metrics.distribution_statistics.user ?? {}}
+              />
+              <DistributionCard
+                title="Статистика хостов"
+                values={metrics.distribution_statistics.host ?? {}}
+              />
+            </section>
+          ) : null}
           <section className="metrics-grid">
             <StabilityCard title="Стабильность пользователей" value={metrics.stability.user} />
             <StabilityCard title="Стабильность хостов" value={metrics.stability.host} />
@@ -212,6 +224,43 @@ function StabilityCard({ title, value }: { title: string; value: StabilitySlice 
       </div>
       <p className="muted">
         Сравнение: {value.compared_run ? value.compared_run.slice(0, 8) : "предыдущего запуска нет"}
+      </p>
+      {value.by_k ? (
+        <div className="histogram-table" role="table" aria-label={`${title}: несколько K`}>
+          {Object.entries(value.by_k).map(([k, metrics]) => (
+            <div role="row" key={k}>
+              <span role="cell">K={k}</span>
+              <strong role="cell">
+                J {metricValue(metrics.jaccard)} · O {metricValue(metrics.overlap)} · S{" "}
+                {metricValue(metrics.spearman)}
+              </strong>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </Card>
+  );
+}
+
+function DistributionCard({ title, values }: { title: string; values: Record<string, number> }) {
+  const metrics = ["mean", "std", "median", "p90", "p95", "p99", "tail_gap", "tail_ratio"];
+  return (
+    <Card className="detail-card">
+      <div>
+        <p className="section-label">Полное распределение score</p>
+        <h2>{title}</h2>
+      </div>
+      <dl className="definition-list">
+        {metrics.map((name) => (
+          <div key={name}>
+            <dt>{name}</dt>
+            <dd>{metricValue(values[name] ?? null)}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="muted">
+        Severity: critical {values.severity_critical ?? 0} · high {values.severity_high ?? 0} ·
+        medium {values.severity_medium ?? 0} · low {values.severity_low ?? 0}
       </p>
     </Card>
   );

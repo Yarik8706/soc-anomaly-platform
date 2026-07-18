@@ -106,14 +106,21 @@ def test_report_generation_creates_markdown_pdf_and_download_endpoints(
             detail = client.get(f"/reports/{report_id}")
             content = client.get(f"/reports/{report_id}/content")
             pdf = client.get(f"/reports/{report_id}/download/pdf")
+            context = client.get(f"/reports/{report_id}/download/context")
     finally:
         app.dependency_overrides.clear()
 
     assert detail.status_code == 200
-    assert {item["format"] for item in detail.json()["files"]} == {"markdown", "pdf"}
+    assert {item["format"] for item in detail.json()["files"]} == {
+        "markdown",
+        "pdf",
+        "context",
+    }
     assert "Severity summary" in content.text
     assert pdf.status_code == 200
     assert pdf.headers["content-type"] == "application/pdf"
+    assert context.status_code == 200
+    assert context.headers["content-type"].startswith("text/csv")
 
 
 def test_proxy_metrics_include_distributions_stability_and_features() -> None:

@@ -25,8 +25,15 @@ const initialForm: RunFormValues = {
   startDate: "",
   endDate: "",
   uploadIds: [],
+  mode: "full",
   nEstimators: 100,
   topN: 20,
+  contamination: 0.05,
+  nNeighbors: 20,
+  randomState: 42,
+  maxSamples: "auto",
+  topFeatures: 5,
+  topPct: 0.05,
 };
 
 export function RunWorkspace() {
@@ -99,7 +106,20 @@ export function RunWorkspace() {
         target_date: form.targetDate || null,
         start_date: form.startDate || null,
         end_date: form.endDate || null,
-        parameters: { n_estimators: form.nEstimators, top_n: form.topN },
+        parameters: {
+          mode: form.mode,
+          n_estimators: form.nEstimators,
+          top_n: form.topN,
+          contamination: form.contamination,
+          n_neighbors: form.nNeighbors,
+          random_state: form.randomState,
+          max_samples:
+            form.maxSamples.trim().toLowerCase() === "auto"
+              ? "auto"
+              : Number(form.maxSamples),
+          top_features: form.topFeatures,
+          top_pct: form.topPct,
+        },
         upload_ids: form.uploadIds,
       };
       const created = await apiFetch<AnalysisRunRead>("/runs", {
@@ -140,6 +160,18 @@ export function RunWorkspace() {
               <Badge tone="running">Проверка перед запуском</Badge>
             </div>
             <div className="form-grid">
+              <Select
+                id="run-mode"
+                label="Режим"
+                value={form.mode}
+                onChange={(event) => update("mode", event.target.value as RunFormValues["mode"])}
+              >
+                <option value="full">Полный конвейер</option>
+                <option value="report+metrics">Отчёт и метрики</option>
+                <option value="report">Только отчётность</option>
+                <option value="metrics">Только метрики</option>
+                <option value="dry-run">Проверка без анализа</option>
+              </Select>
               <Select
                 id="run-scope"
                 label="Период"
@@ -183,6 +215,17 @@ export function RunWorkspace() {
                 </>
               ) : null}
               <Input
+                id="contamination"
+                label="Contamination"
+                type="number"
+                min={0.001}
+                max={0.5}
+                step={0.001}
+                value={form.contamination}
+                error={errors.contamination}
+                onChange={(event) => update("contamination", Number(event.target.value))}
+              />
+              <Input
                 id="n-estimators"
                 label="Количество деревьев"
                 type="number"
@@ -193,8 +236,55 @@ export function RunWorkspace() {
                 onChange={(event) => update("nEstimators", Number(event.target.value))}
               />
               <Input
+                id="n-neighbors"
+                label="Соседей LOF"
+                type="number"
+                min={1}
+                max={10000}
+                value={form.nNeighbors}
+                error={errors.nNeighbors}
+                onChange={(event) => update("nNeighbors", Number(event.target.value))}
+              />
+              <Input
+                id="random-state"
+                label="Random state"
+                type="number"
+                value={form.randomState}
+                error={errors.randomState}
+                onChange={(event) => update("randomState", Number(event.target.value))}
+              />
+              <Input
+                id="max-samples"
+                label="Max samples"
+                value={form.maxSamples}
+                error={errors.maxSamples}
+                hint="auto, целое число или доля 0–1"
+                onChange={(event) => update("maxSamples", event.target.value)}
+              />
+              <Input
+                id="top-features"
+                label="Признаков в объяснении"
+                type="number"
+                min={1}
+                max={100}
+                value={form.topFeatures}
+                error={errors.topFeatures}
+                onChange={(event) => update("topFeatures", Number(event.target.value))}
+              />
+              <Input
+                id="top-pct"
+                label="Доля на графиках"
+                type="number"
+                min={0.001}
+                max={1}
+                step={0.001}
+                value={form.topPct}
+                error={errors.topPct}
+                onChange={(event) => update("topPct", Number(event.target.value))}
+              />
+              <Input
                 id="top-n"
-                label="Число результатов"
+                label="Строк в UI/отчёте"
                 type="number"
                 min={1}
                 max={500}
@@ -233,7 +323,7 @@ export function RunWorkspace() {
                   {statusLabel(form.scope)} · {form.uploadIds.length} файлов
                 </strong>
                 <small>
-                  Isolation Forest: {form.nEstimators} деревьев · сохранить top {form.topN}
+                  IF: {form.nEstimators} деревьев · LOF: {form.nNeighbors} соседей · показать top {form.topN}
                 </small>
               </div>
             </div>

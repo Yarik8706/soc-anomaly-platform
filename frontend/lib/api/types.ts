@@ -3,6 +3,7 @@ export type Severity = "critical" | "high" | "medium" | "low";
 export type EntityType = "user" | "host";
 export type AnomalyStatus = "new" | "investigating" | "incident" | "false_positive" | "closed";
 export type AnalysisScope = "day" | "week" | "month" | "range" | "all";
+export type AnalysisMode = "report" | "metrics" | "report+metrics" | "full" | "dry-run";
 
 export interface UserRead {
   id: string;
@@ -80,6 +81,14 @@ export interface AnomalyRead {
   severity: string;
   score: number;
   rank: number;
+  score_isolation_forest?: number | null;
+  score_isolation_forest_norm?: number | null;
+  rank_isolation_forest?: number | null;
+  score_lof?: number | null;
+  score_lof_norm?: number | null;
+  rank_lof?: number | null;
+  score_combined?: number | null;
+  rank_combined?: number | null;
   summary: string;
   status: string;
   context: Record<string, unknown> | null;
@@ -143,6 +152,7 @@ export interface StabilitySlice {
   jaccard_at_k: number | null;
   overlap_at_k: number | null;
   spearman_at_k: number | null;
+  by_k?: Record<string, { jaccard: number; overlap: number; spearman: number }>;
 }
 
 export interface ProxyMetricsRead {
@@ -150,7 +160,12 @@ export interface ProxyMetricsRead {
   generated_at: string;
   score_distributions: { user: Histogram; host: Histogram };
   stability: { user: StabilitySlice; host: StabilitySlice };
+  distribution_statistics?: Record<string, Record<string, number>>;
+  stability_experiments?: Record<string, Array<Record<string, unknown>>>;
+  explainability?: Record<string, unknown>;
   contributing_features: Record<string, number>;
+  k_values?: number[];
+  artifacts?: Record<string, string>;
 }
 
 export interface AuditEventRead {

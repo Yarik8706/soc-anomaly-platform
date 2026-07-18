@@ -171,6 +171,34 @@ export function RunDetail({ id }: { id: string }) {
           <p>{run.error_message}</p>
         </Card>
       ) : null}
+      {run.parameters ? (
+        <Card className="detail-card">
+          <div className="section-heading">
+            <div>
+              <p className="section-label">Воспроизводимость</p>
+              <h2>Конфигурация модели</h2>
+            </div>
+          </div>
+          <dl className="definition-list">
+            {[
+              "mode",
+              "contamination",
+              "n_estimators",
+              "n_neighbors",
+              "random_state",
+              "max_samples",
+              "top_features",
+              "top_pct",
+              "top_n",
+            ].map((name) => (
+              <div key={name}>
+                <dt>{name}</dt>
+                <dd>{String(run.parameters?.[name] ?? "—")}</dd>
+              </div>
+            ))}
+          </dl>
+        </Card>
+      ) : null}
       <Card className="detail-card">
         <div className="section-heading">
           <div>
