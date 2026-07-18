@@ -13,7 +13,6 @@ export default function OverviewPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Операционный обзор"
         title="Центр мониторинга"
         description="Единая точка контроля загрузок, ML-запусков и расследований."
       />
@@ -31,7 +30,7 @@ export default function OverviewPage() {
       </section>
       <Card className="hero-panel">
         <div>
-          <p className="eyebrow">Начало работы</p>
+          <p className="section-label">Начало работы</p>
           <h2>Загрузите данные для первого анализа</h2>
           <p>Платформа проверит структуру логов, нормализует события и запустит поиск аномалий.</p>
         </div>

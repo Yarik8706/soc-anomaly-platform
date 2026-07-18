@@ -55,15 +55,6 @@ docker compose up --build
 - API и Swagger UI: <http://localhost:8001/docs>;
 - healthcheck: <http://localhost:8001/health>.
 
-Порты можно изменить, например:
-
-```bash
-FRONTEND_PORT=3100 BACKEND_PORT=9000 docker compose up --build
-```
-
-PostgreSQL и Redis доступны backend/worker по внутренней сети Compose и по
-умолчанию не публикуются на host, чтобы не конфликтовать с локальными сервисами.
-
 Проверить состояние и посмотреть логи worker:
 
 ```bash

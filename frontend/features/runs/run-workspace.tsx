@@ -117,7 +117,6 @@ export function RunWorkspace() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Analysis pipeline"
         title="Запуски анализа"
         description="Создавайте ML-анализ и следите за выполнением каждого этапа."
         actions={
@@ -135,7 +134,7 @@ export function RunWorkspace() {
           <form onSubmit={submit}>
             <div className="section-heading">
               <div>
-                <p className="eyebrow">Новый анализ</p>
+                <p className="section-label">Новый анализ</p>
                 <h2>Параметры запуска</h2>
               </div>
               <Badge tone="running">Проверка перед запуском</Badge>
@@ -254,7 +253,7 @@ export function RunWorkspace() {
       <section className="section-stack">
         <div className="table-toolbar">
           <div>
-            <p className="eyebrow">История</p>
+            <p className="section-label">История</p>
             <h2>Все запуски</h2>
           </div>
           <div className="filter-row">

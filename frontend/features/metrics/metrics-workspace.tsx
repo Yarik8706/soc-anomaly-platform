@@ -52,7 +52,6 @@ export function MetricsWorkspace({ selectedRun }: { selectedRun: string }) {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Model health"
         title="Метрики качества"
         description="Распределения score, стабильность топа и признаки, влияющие на модель."
         actions={
@@ -106,7 +105,7 @@ export function MetricsWorkspace({ selectedRun }: { selectedRun: string }) {
           <Card className="detail-card">
             <div className="section-heading">
               <div>
-                <p className="eyebrow">Explainability</p>
+                <p className="section-label">Объяснимость</p>
                 <h2>Вклад признаков</h2>
               </div>
               <span className="muted">Рассчитано {formatDate(metrics.generated_at)}</span>
@@ -144,7 +143,7 @@ function HistogramChart({ title, histogram }: { title: string; histogram: Histog
   return (
     <Card className="detail-card histogram-card">
       <div>
-        <p className="eyebrow">Score distribution</p>
+        <p className="section-label">Распределение оценок</p>
         <h2>{title}</h2>
       </div>
       {points.length ? (
@@ -183,7 +182,7 @@ function StabilityCard({ title, value }: { title: string; value: StabilitySlice 
     <Card className="detail-card stability-card">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Top-K stability</p>
+          <p className="section-label">Стабильность Top-K</p>
           <h2>{title}</h2>
         </div>
         <GitCompareArrows />

@@ -67,7 +67,6 @@ export function AnomalyWorkspace({ initialFilters }: { initialFilters: AnomalyFi
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Analyst workspace"
         title="Аномалии"
         description="Приоритизированные сигналы по пользователям и хостам с проверяемым workflow."
       />
@@ -167,7 +166,7 @@ export function AnomalyWorkspace({ initialFilters }: { initialFilters: AnomalyFi
       <section className="section-stack">
         <TableToolbar>
           <div>
-            <p className="eyebrow">Очередь разбора</p>
+            <p className="section-label">Очередь разбора</p>
             <h2>{data ? `${data.total} сигналов` : "Сигналы"}</h2>
           </div>
           <div className="filter-row">

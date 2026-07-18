@@ -80,13 +80,12 @@ export function ReportWorkspace() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Reporting"
         title="SOC-отчёты"
         description="Проверяемые сводки расследований в Markdown и PDF."
       />
       <Card className="report-create-card">
         <div>
-          <p className="eyebrow">Новый отчёт</p>
+          <p className="section-label">Новый отчёт</p>
           <h2>Сформировать по завершённому запуску</h2>
           <p>Генерация выполняется в фоне; статус обновится автоматически.</p>
         </div>
@@ -117,7 +116,7 @@ export function ReportWorkspace() {
       <section className="section-stack">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Архив</p>
+            <p className="section-label">Архив</p>
             <h2>Все отчёты</h2>
           </div>
           <span className="muted">{reports.length} документов</span>

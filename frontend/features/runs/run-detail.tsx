@@ -92,7 +92,6 @@ export function RunDetail({ id }: { id: string }) {
         <ChevronLeft />К запускам
       </Link>
       <PageHeader
-        eyebrow="Карточка запуска"
         title={`Анализ ${id.slice(0, 8)}`}
         description={`${statusLabel(run.scope)} · создан ${formatDate(run.created_at)}`}
         actions={
@@ -112,7 +111,7 @@ export function RunDetail({ id }: { id: string }) {
       <section className="run-overview">
         <Card className="detail-card">
           <div className="section-heading">
-            <p className="eyebrow">Состояние</p>
+            <p className="section-label">Состояние</p>
             <Badge tone={statusTone(run.status)}>{statusLabel(run.status)}</Badge>
           </div>
           <div className="run-progress">
@@ -144,7 +143,7 @@ export function RunDetail({ id }: { id: string }) {
           </dl>
         </Card>
         <Card className="detail-card">
-          <p className="eyebrow">Pipeline</p>
+          <p className="section-label">Этапы обработки</p>
           <div className="stage-list">
             {stages.map(([name, value], index) => (
               <div
@@ -175,7 +174,7 @@ export function RunDetail({ id }: { id: string }) {
       <Card className="detail-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Связи</p>
+            <p className="section-label">Связанные данные</p>
             <h2>Данные и результаты</h2>
           </div>
         </div>

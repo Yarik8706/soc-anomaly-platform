@@ -139,7 +139,6 @@ export function UploadWorkspace() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Data ingestion"
         title="Загрузки"
         description="Проверьте и нормализуйте SIEM/NGFW файлы перед ML-анализом."
         actions={
@@ -184,7 +183,7 @@ export function UploadWorkspace() {
         <Card className="queue-panel">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Очередь загрузки</p>
+              <p className="section-label">Очередь загрузки</p>
               <h2>{queue.length} файлов</h2>
             </div>
             <Button
@@ -236,7 +235,7 @@ export function UploadWorkspace() {
       <section className="section-stack">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">История</p>
+            <p className="section-label">История</p>
             <h2>Загруженные файлы</h2>
           </div>
           <span className="muted">{uploads.length} объектов</span>

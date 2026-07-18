@@ -43,7 +43,6 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
           </div>
         </div>
         <div>
-          <p className="eyebrow">Secure workspace</p>
           <h1>Вход в платформу</h1>
           <p>
             Используйте учётную запись SOC-команды. Сессия хранится в защищённой HttpOnly cookie.
@@ -83,8 +82,7 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
         </small>
       </section>
       <section className="login-aside">
-        <p className="eyebrow">Operational clarity</p>
-        <h2>От сырого события до проверяемого решения.</h2>
+        <h2>От события до решения</h2>
         <ol>
           <li>
             <span>01</span>
@@ -97,14 +95,14 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
             <span>02</span>
             <div>
               <strong>ML-анализ</strong>
-              <small>Ранжирование и explainability</small>
+              <small>Ранжирование и объяснение результатов</small>
             </div>
           </li>
           <li>
             <span>03</span>
             <div>
               <strong>Расследование</strong>
-              <small>Workflow с полным audit trail</small>
+              <small>Рабочий процесс с полной историей действий</small>
             </div>
           </li>
         </ol>

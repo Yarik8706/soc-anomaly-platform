@@ -112,7 +112,6 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
         <ChevronLeft />К очереди разбора
       </Link>
       <PageHeader
-        eyebrow={`${anomaly.entity_type} · rank #${anomaly.rank}`}
         title={anomaly.entity}
         description={anomaly.summary}
         actions={
@@ -124,7 +123,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
       />
       <section className="anomaly-detail-grid">
         <Card className="detail-card">
-          <p className="eyebrow">Сигнал</p>
+          <p className="section-label">Сигнал</p>
           <div className="anomaly-score">
             <ShieldAlert />
             <span>
@@ -154,7 +153,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
         <Card className="detail-card detail-card--wide">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Explainability</p>
+              <p className="section-label">Объяснимость</p>
               <h2>Почему это аномалия</h2>
             </div>
             <span className="muted">Вклад относительно baseline</span>
@@ -190,7 +189,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
       </section>
       <section className="anomaly-detail-grid">
         <Card className="detail-card">
-          <p className="eyebrow">Контекст</p>
+          <p className="section-label">Контекст</p>
           {anomaly.context && Object.keys(anomaly.context).length ? (
             <dl className="definition-list">
               {Object.entries(anomaly.context).map(([key, value]) => (
@@ -207,7 +206,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
         <Card className="detail-card detail-card--wide">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Workflow</p>
+              <p className="section-label">Работа с инцидентом</p>
               <h2>Решение аналитика</h2>
             </div>
           </div>
@@ -262,7 +261,7 @@ export function AnomalyDetailView({ id, back }: { id: string; back?: string }) {
       <Card className="detail-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Audit trail</p>
+            <p className="section-label">История действий</p>
             <h2>История действий</h2>
           </div>
         </div>

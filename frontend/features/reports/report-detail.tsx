@@ -97,7 +97,6 @@ export function ReportDetailView({ id }: { id: string }) {
         <ChevronLeft />К отчётам
       </Link>
       <PageHeader
-        eyebrow={`Report · ${report.id.slice(0, 8)}`}
         title="SOC-отчёт"
         description={`Запуск ${report.run_id} · ${formatDate(report.created_at)}`}
         actions={<Badge tone={statusTone(report.status)}>{statusLabel(report.status)}</Badge>}
@@ -112,7 +111,7 @@ export function ReportDetailView({ id }: { id: string }) {
         <Card className="detail-card">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Файлы</p>
+              <p className="section-label">Файлы</p>
               <h2>Скачать результат</h2>
             </div>
           </div>

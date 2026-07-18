@@ -77,7 +77,6 @@ export function UploadDetail({ id }: { id: string }) {
         <ChevronLeft />К загрузкам
       </Link>
       <PageHeader
-        eyebrow="Карточка файла"
         title={upload.filename}
         description={`${formatBytes(upload.size)} · загружен ${formatDate(upload.created_at)}`}
         actions={
@@ -104,7 +103,7 @@ export function UploadDetail({ id }: { id: string }) {
       />
       <section className="detail-grid">
         <Card className="detail-card">
-          <p className="eyebrow">Состояние</p>
+          <p className="section-label">Состояние</p>
           <Badge tone={statusTone(upload.status)}>{statusLabel(upload.status)}</Badge>
           <dl className="definition-list">
             <div>
@@ -130,7 +129,7 @@ export function UploadDetail({ id }: { id: string }) {
           </dl>
         </Card>
         <Card className="detail-card detail-card--wide">
-          <p className="eyebrow">Проверка структуры</p>
+          <p className="section-label">Проверка структуры</p>
           {validation ? (
             <>
               <div
@@ -172,7 +171,7 @@ export function UploadDetail({ id }: { id: string }) {
       <Card className="detail-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Артефакты</p>
+            <p className="section-label">Артефакты</p>
             <h2>Результат нормализации</h2>
           </div>
           {normalization?.processed_rows !== undefined ? (

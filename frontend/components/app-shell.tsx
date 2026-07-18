@@ -81,7 +81,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             })}
         </nav>
         <div className="sidebar-footer">
-          <span className="system-dot" aria-hidden="true" />
           <span>
             <strong>{user?.email}</strong>
             <small>{user?.role}</small>

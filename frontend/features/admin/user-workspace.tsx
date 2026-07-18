@@ -97,7 +97,6 @@ export function UserWorkspace() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Administration"
         title="Пользователи"
         description="Учётные записи и ролевой доступ к платформе."
         actions={

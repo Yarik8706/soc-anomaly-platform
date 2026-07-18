@@ -59,7 +59,6 @@ export function AuditWorkspace() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Security operations"
         title="Журнал аудита"
         description="Неизменяемая последовательность значимых действий и событий безопасности."
       />
@@ -195,7 +194,7 @@ export function AuditWorkspace() {
                 </div>
               </dl>
               <div>
-                <p className="eyebrow">Payload</p>
+                <p className="section-label">Данные события</p>
                 <pre className="audit-json">{JSON.stringify(selected.details ?? {}, null, 2)}</pre>
               </div>
             </>
