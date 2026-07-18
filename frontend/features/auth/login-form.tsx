@@ -45,7 +45,7 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
         <div>
           <h1>Вход в платформу</h1>
           <p>
-            Используйте учётную запись SOC-команды. Сессия хранится в защищённой HttpOnly cookie.
+            Используйте учётную запись SOC-команды. Веб-система для специалистов ИБ/SOC.
           </p>
         </div>
         <form onSubmit={submit}>
@@ -64,7 +64,7 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
             type="password"
             autoComplete="current-password"
             required
-            minLength={8}
+            minLength={5}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -77,9 +77,6 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
             Войти
           </Button>
         </form>
-        <small className="login-note">
-          Доступ и действия журналируются для аудита безопасности.
-        </small>
       </section>
       <section className="login-aside">
         <h2>От события до решения</h2>

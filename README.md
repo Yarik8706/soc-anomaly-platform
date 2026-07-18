@@ -42,8 +42,8 @@ docker compose up --build
 локального администратора. Значения по умолчанию предназначены только для локальной
 разработки:
 
-- email: `admin@example.com`;
-- password: `local-admin-change-me`.
+- email: `admin@admin.com`;
+- password: `admin`.
 
 Перед использованием общей среды скопируйте `.env.example` в `.env` и обязательно
 замените `JWT_SECRET` и `INITIAL_ADMIN_PASSWORD`. Seed идемпотентен и не меняет
@@ -82,3 +82,6 @@ npm run dev
 
 По умолчанию dev-сервер ожидает backend на `http://localhost:8001`. Полный контракт API и
 правила интеграции описаны в `docs/frontend-backend-contracts.md`.
+
+Подробная инструкция по локальному запуску backend и его инфраструктуры находится в
+[`backend/README.md`](backend/README.md).

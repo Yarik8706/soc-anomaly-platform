@@ -39,7 +39,7 @@ export default function OverviewPage() {
             <span>01</span>
             <div>
               <strong>Загрузка</strong>
-              <small>CSV, TSV или TXT до 50 МиБ</small>
+              <small>CSV, TSV или TXT до 200 МиБ</small>
             </div>
           </li>
           <li>

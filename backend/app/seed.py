@@ -1,10 +1,14 @@
 import os
 
-from pydantic import ValidationError
+from pydantic import BaseModel, EmailStr, Field, ValidationError
 
 from app.core.db import SessionLocal
-from app.schemas.auth import UserCreate, UserRole
-from app.services.auth import create_user, get_user_by_email
+from app.services.auth import create_initial_admin
+
+
+class InitialAdminSettings(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1, max_length=256)
 
 
 def seed_initial_admin() -> None:
@@ -13,13 +17,12 @@ def seed_initial_admin() -> None:
     if not email or not password:
         return
     try:
-        payload = UserCreate(email=email, password=password, role=UserRole.admin)
+        payload = InitialAdminSettings(email=email, password=password)
     except ValidationError as exc:
         raise RuntimeError("Initial administrator settings are invalid") from exc
 
     with SessionLocal() as db:
-        if get_user_by_email(db, str(payload.email)) is None:
-            create_user(db, payload)
+        create_initial_admin(db, str(payload.email), payload.password)
 
 
 if __name__ == "__main__":

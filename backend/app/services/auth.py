@@ -24,10 +24,27 @@ def create_user(db: Session, payload: UserCreate) -> User:
     email = str(payload.email).strip().lower()
     if get_user_by_email(db, email):
         raise ValueError("A user with this email already exists")
+    return _create_user(db, email, payload.password, payload.role)
+
+
+def create_initial_admin(db: Session, email: str, password: str) -> User:
+    normalized_email = email.strip().lower()
+    existing = get_user_by_email(db, normalized_email)
+    if existing is not None:
+        return existing
+    return _create_user(db, normalized_email, password, UserRole.admin)
+
+
+def _create_user(
+    db: Session,
+    email: str,
+    password: str,
+    role: UserRole,
+) -> User:
     user = User(
         email=email,
-        password_hash=password_hash.hash(payload.password),
-        role=payload.role.value,
+        password_hash=password_hash.hash(password),
+        role=role.value,
     )
     db.add(user)
     db.commit()

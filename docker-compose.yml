@@ -9,8 +9,8 @@ x-backend-environment: &backend-environment
   NORMALIZED_DIRECTORY: /app/data/normalized
   ANALYSIS_DIRECTORY: /app/data/runs
   JWT_SECRET: ${JWT_SECRET:-local-docker-secret-change-before-sharing}
-  INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL:-admin@example.com}
-  INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-local-admin-change-me}
+  INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL:-admin@admin.com}
+  INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-admin}
 
 x-backend-volumes: &backend-volumes
   - ./data/uploads:/app/data/uploads
@@ -98,6 +98,8 @@ services:
 
   postgres:
     image: postgres:16-alpine
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     environment:
       POSTGRES_DB: soc_anomaly
       POSTGRES_USER: soc_user
@@ -114,6 +116,8 @@ services:
   redis:
     image: redis:8-alpine
     command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:

@@ -16,7 +16,7 @@ from app.services.log_normalization import (
 from app.services.log_validation import FileValidationResult, validate_log_file
 
 ALLOWED_EXTENSIONS = {".csv", ".tsv", ".txt"}
-MAX_FILE_SIZE = 50 * 1024 * 1024
+MAX_FILE_SIZE = 200 * 1024 * 1024
 CHUNK_SIZE = 1024 * 1024
 
 

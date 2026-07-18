@@ -1,4 +1,4 @@
-export const MAX_FILE_SIZE = 50 * 1024 * 1024;
+export const MAX_FILE_SIZE = 200 * 1024 * 1024;
 export const MAX_BATCH_SIZE = 10;
 const allowedExtensions = new Set(["csv", "tsv", "txt"]);
 
@@ -6,7 +6,7 @@ export function validateUploadFile(file: File): string | null {
   const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
   if (!allowedExtensions.has(extension)) return "Поддерживаются только CSV, TSV и TXT";
   if (file.size === 0) return "Файл пуст";
-  if (file.size > MAX_FILE_SIZE) return "Файл превышает лимит 50 МиБ";
+  if (file.size > MAX_FILE_SIZE) return "Файл превышает лимит 200 МиБ";
   return null;
 }
 

@@ -176,7 +176,7 @@ export function UploadWorkspace() {
         <UploadCloud aria-hidden="true" />
         <div>
           <strong>Перетащите файлы сюда</strong>
-          <p>CSV, TSV или TXT · до 50 МиБ · не более {MAX_BATCH_SIZE} за раз</p>
+          <p>CSV, TSV или TXT · до 200 МиБ · не более {MAX_BATCH_SIZE} за раз</p>
         </div>
       </Card>
       {queue.length ? (
