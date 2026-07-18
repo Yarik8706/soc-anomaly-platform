@@ -5,11 +5,18 @@ import { Input } from "@/components/ui/field";
 import { useSession } from "@/features/auth/session-provider";
 import { ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+
+const subscribeToClient = () => () => {};
 
 export function LoginForm({ returnTo }: { returnTo: string }) {
   const { user, loading, login } = useSession();
   const router = useRouter();
+  const mounted = useSyncExternalStore(
+    subscribeToClient,
+    () => true,
+    () => false,
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -48,35 +55,39 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
             Используйте учётную запись SOC-команды. Веб-система для специалистов ИБ/SOC.
           </p>
         </div>
-        <form onSubmit={submit}>
-          <Input
-            id="login-email"
-            label="Email"
-            type="email"
-            autoComplete="username"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            id="login-password"
-            label="Пароль"
-            type="password"
-            autoComplete="current-password"
-            required
-            minLength={5}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error ? (
-            <p className="login-error" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <Button type="submit" loading={busy} disabled={loading}>
-            Войти
-          </Button>
-        </form>
+        {mounted ? (
+          <form onSubmit={submit}>
+            <Input
+              id="login-email"
+              label="Email"
+              type="email"
+              autoComplete="username"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+              id="login-password"
+              label="Пароль"
+              type="password"
+              autoComplete="current-password"
+              required
+              minLength={5}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error ? (
+              <p className="login-error" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <Button type="submit" loading={busy} disabled={loading}>
+              Войти
+            </Button>
+          </form>
+        ) : (
+          <div className="login-form-placeholder" aria-hidden="true" />
+        )}
       </section>
       <section className="login-aside">
         <h2>От события до решения</h2>
